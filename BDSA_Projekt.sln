@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo", "ProjectBravo\ProjectBravo.csproj", "{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Tests", "ProjectBravo.Tests\ProjectBravo.Tests.csproj", "{23F42A91-21BB-4265-9BB7-0D2BAA703B80}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23F42A91-21BB-4265-9BB7-0D2BAA703B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23F42A91-21BB-4265-9BB7-0D2BAA703B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23F42A91-21BB-4265-9BB7-0D2BAA703B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23F42A91-21BB-4265-9BB7-0D2BAA703B80}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
