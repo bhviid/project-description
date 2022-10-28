@@ -8,22 +8,107 @@
     ".NETCoreApp,Version=v6.0": {
       "ProjectBravo.Tests/1.0.0": {
         "dependencies": {
-          "Microsoft.NET.Test.Sdk": "17.1.0",
+          "Microsoft.NET.Test.Sdk": "17.3.2",
           "ProjectBravo": "1.0.0",
           "coverlet.collector": "3.1.2",
           "xunit": "2.4.2",
-          "xunit.runner.visualstudio": "2.4.3"
+          "xunit.runner.visualstudio": "2.4.5"
         },
         "runtime": {
           "ProjectBravo.Tests.dll": {}
         }
       },
       "coverlet.collector/3.1.2": {},
-      "Microsoft.CodeCoverage/17.1.0": {
+      "LibGit2Sharp/0.26.2": {
+        "dependencies": {
+          "LibGit2Sharp.NativeBinaries": "2.0.306"
+        },
+        "runtime": {
+          "lib/netstandard2.0/LibGit2Sharp.dll": {
+            "assemblyVersion": "0.26.0.0",
+            "fileVersion": "0.26.2.97"
+          }
+        }
+      },
+      "LibGit2Sharp.NativeBinaries/2.0.306": {
+        "runtimeTargets": {
+          "runtimes/alpine-x64/native/libgit2-106a5f2.so": {
+            "rid": "alpine-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/alpine.3.9-x64/native/libgit2-106a5f2.so": {
+            "rid": "alpine.3.9-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/debian-arm64/native/libgit2-106a5f2.so": {
+            "rid": "debian-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/debian.9-x64/native/libgit2-106a5f2.so": {
+            "rid": "debian.9-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/fedora-x64/native/libgit2-106a5f2.so": {
+            "rid": "fedora-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/libgit2-106a5f2.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx/native/libgit2-106a5f2.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/rhel-x64/native/libgit2-106a5f2.so": {
+            "rid": "rhel-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/ubuntu.16.04-arm64/native/libgit2-106a5f2.so": {
+            "rid": "ubuntu.16.04-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/ubuntu.18.04-x64/native/libgit2-106a5f2.so": {
+            "rid": "ubuntu.18.04-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x64/native/git2-106a5f2.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.28.4.0"
+          },
+          "runtimes/win-x64/native/git2-106a5f2.pdb": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/git2-106a5f2.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.28.4.0"
+          },
+          "runtimes/win-x86/native/git2-106a5f2.pdb": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Microsoft.CodeCoverage/17.3.2": {
         "runtime": {
           "lib/netcoreapp1.0/Microsoft.VisualStudio.CodeCoverage.Shim.dll": {
             "assemblyVersion": "15.0.0.0",
-            "fileVersion": "17.100.221.61401"
+            "fileVersion": "17.300.622.32707"
           }
         }
       },
@@ -47,15 +132,15 @@
           "System.Threading": "4.3.0"
         }
       },
-      "Microsoft.NET.Test.Sdk/17.1.0": {
+      "Microsoft.NET.Test.Sdk/17.3.2": {
         "dependencies": {
-          "Microsoft.CodeCoverage": "17.1.0",
-          "Microsoft.TestPlatform.TestHost": "17.1.0"
+          "Microsoft.CodeCoverage": "17.3.2",
+          "Microsoft.TestPlatform.TestHost": "17.3.2"
         }
       },
       "Microsoft.NETCore.Platforms/1.1.0": {},
       "Microsoft.NETCore.Targets/1.1.0": {},
-      "Microsoft.TestPlatform.ObjectModel/17.1.0": {
+      "Microsoft.TestPlatform.ObjectModel/17.3.2": {
         "dependencies": {
           "NuGet.Frameworks": "5.11.0",
           "System.Reflection.Metadata": "1.6.0"
@@ -155,9 +240,9 @@
           }
         }
       },
-      "Microsoft.TestPlatform.TestHost/17.1.0": {
+      "Microsoft.TestPlatform.TestHost/17.3.2": {
         "dependencies": {
-          "Microsoft.TestPlatform.ObjectModel": "17.1.0",
+          "Microsoft.TestPlatform.ObjectModel": "17.3.2",
           "Newtonsoft.Json": "9.0.1"
         },
         "runtime": {
@@ -1089,8 +1174,11 @@
           }
         }
       },
-      "xunit.runner.visualstudio/2.4.3": {},
+      "xunit.runner.visualstudio/2.4.5": {},
       "ProjectBravo/1.0.0": {
+        "dependencies": {
+          "LibGit2Sharp": "0.26.2"
+        },
         "runtime": {
           "ProjectBravo.dll": {}
         }
@@ -1110,12 +1198,26 @@
       "path": "coverlet.collector/3.1.2",
       "hashPath": "coverlet.collector.3.1.2.nupkg.sha512"
     },
-    "Microsoft.CodeCoverage/17.1.0": {
+    "LibGit2Sharp/0.26.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0N/ZJ71ncCxQWhgtkEYKOgu2oMHa8h1tsOUbhmIKXF8UwtSUCe4vHAsJ3DVcNWRwNfQzSTy263ZE+QF6MdIhhQ==",
-      "path": "microsoft.codecoverage/17.1.0",
-      "hashPath": "microsoft.codecoverage.17.1.0.nupkg.sha512"
+      "sha512": "sha512-qHLhuI8VEtMf7jiurT/Ypquh37S6ngllCx+aq9uqOY2evok7Fb2AzhJgvNctsXOzHaJwveBs+30sPQJFn/pISg==",
+      "path": "libgit2sharp/0.26.2",
+      "hashPath": "libgit2sharp.0.26.2.nupkg.sha512"
+    },
+    "LibGit2Sharp.NativeBinaries/2.0.306": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LY9nyPE2X/eLl69ttuDPFFlKR8b5KXlqYej1YR1YmqmhF8Izo+vPX90q5ouOO5YGCf5d4lDUOC0x2yMWw00P7Q==",
+      "path": "libgit2sharp.nativebinaries/2.0.306",
+      "hashPath": "libgit2sharp.nativebinaries.2.0.306.nupkg.sha512"
+    },
+    "Microsoft.CodeCoverage/17.3.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+CeYNY9hYNRgv1wAID5koeDVob1ZOrOYfRRTLxU9Zm5ZMDMkMZ8wzXgakxVv+jtk8tPdE8Ze9vVE+czMKapv/Q==",
+      "path": "microsoft.codecoverage/17.3.2",
+      "hashPath": "microsoft.codecoverage.17.3.2.nupkg.sha512"
     },
     "Microsoft.CSharp/4.0.1": {
       "type": "package",
@@ -1124,12 +1226,12 @@
       "path": "microsoft.csharp/4.0.1",
       "hashPath": "microsoft.csharp.4.0.1.nupkg.sha512"
     },
-    "Microsoft.NET.Test.Sdk/17.1.0": {
+    "Microsoft.NET.Test.Sdk/17.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-MVKvOsHIfrZrvg+8aqOF5dknO/qWrR1sWZjMPQ1N42MKMlL/zQL30FQFZxPeWfmVKWUWAOmAHYsqB5OerTKziw==",
-      "path": "microsoft.net.test.sdk/17.1.0",
-      "hashPath": "microsoft.net.test.sdk.17.1.0.nupkg.sha512"
+      "sha512": "sha512-apR0ha1T8FujBwq1P8i/DOZjbI5XhcP/i8As4NnVztVSpZG8GtWRPCstcmgkUkBpvEfcrrDPlJWbuZY+Hl1hSg==",
+      "path": "microsoft.net.test.sdk/17.3.2",
+      "hashPath": "microsoft.net.test.sdk.17.3.2.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
       "type": "package",
@@ -1145,19 +1247,19 @@
       "path": "microsoft.netcore.targets/1.1.0",
       "hashPath": "microsoft.netcore.targets.1.1.0.nupkg.sha512"
     },
-    "Microsoft.TestPlatform.ObjectModel/17.1.0": {
+    "Microsoft.TestPlatform.ObjectModel/17.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-OMo/FYnKGy3lZEK0gfitskRM3ga/YBt6MyCyFPq0xNLeybGOQ6HnYNAAvzyePo5WPuMiw3LX+HiuRWNjnas1fA==",
-      "path": "microsoft.testplatform.objectmodel/17.1.0",
-      "hashPath": "microsoft.testplatform.objectmodel.17.1.0.nupkg.sha512"
+      "sha512": "sha512-DJEIfSA2GDC+2m42vKGNR2hm+Uhta4SpCsLZVVvYIiYMjxtk7GzNnv82qvE4SCW3kIYllMg2D0rr8juuj/f7AA==",
+      "path": "microsoft.testplatform.objectmodel/17.3.2",
+      "hashPath": "microsoft.testplatform.objectmodel.17.3.2.nupkg.sha512"
     },
-    "Microsoft.TestPlatform.TestHost/17.1.0": {
+    "Microsoft.TestPlatform.TestHost/17.3.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-JS0JDLniDhIzkSPLHz7N/x1CG8ywJOtwInFDYA3KQvbz+ojGoT5MT2YDVReL1b86zmNRV8339vsTSm/zh0RcMg==",
-      "path": "microsoft.testplatform.testhost/17.1.0",
-      "hashPath": "microsoft.testplatform.testhost.17.1.0.nupkg.sha512"
+      "sha512": "sha512-113J19v31pIx+PzmdEw67cWTZWh/YApnprbclFeat6szNbnpKOKG7Ap4PX5LT6E5Da+xONyilxvx2HZPpEaXPQ==",
+      "path": "microsoft.testplatform.testhost/17.3.2",
+      "hashPath": "microsoft.testplatform.testhost.17.3.2.nupkg.sha512"
     },
     "Microsoft.Win32.Primitives/4.3.0": {
       "type": "package",
@@ -1740,12 +1842,12 @@
       "path": "xunit.extensibility.execution/2.4.2",
       "hashPath": "xunit.extensibility.execution.2.4.2.nupkg.sha512"
     },
-    "xunit.runner.visualstudio/2.4.3": {
+    "xunit.runner.visualstudio/2.4.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-kZZSmOmKA8OBlAJaquPXnJJLM9RwQ27H7BMVqfMLUcTi9xHinWGJiWksa3D4NEtz0wZ/nxd2mogObvBgJKCRhQ==",
-      "path": "xunit.runner.visualstudio/2.4.3",
-      "hashPath": "xunit.runner.visualstudio.2.4.3.nupkg.sha512"
+      "sha512": "sha512-OwHamvBdUKgqsXfBzWiCW/O98BTx81UKzx2bieIOQI7CZFE5NEQZGi8PBQGIKawDW96xeRffiNf20SjfC0x9hw==",
+      "path": "xunit.runner.visualstudio/2.4.5",
+      "hashPath": "xunit.runner.visualstudio.2.4.5.nupkg.sha512"
     },
     "ProjectBravo/1.0.0": {
       "type": "project",

@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "yWNkQYlczSJd5wuknFgnlqyJ9Z+Eija0HpkaLUm6FHzxO9nYe+gFF77hRKpVZxK7nPhu1JpE5eTAnZ8Yafx0Rw==",
+  "dgSpecHash": "6p4Cvk4BYLBNmKuhcGJ78egnmmn9I3sqfYttZe+lg94XFDrOrMlFt9WWEaN9qNGe9l6cWXCr6E4qQVSyruF2nw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
+  "projectFilePath": "C:\\Users\\emjak\\Desktop\\Analysis, Design and Software Architecture\\eksprojekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\tobia\\.nuget\\packages\\libgit2sharp\\0.26.2\\libgit2sharp.0.26.2.nupkg.sha512",
-    "C:\\Users\\tobia\\.nuget\\packages\\libgit2sharp.nativebinaries\\2.0.306\\libgit2sharp.nativebinaries.2.0.306.nupkg.sha512"
+    "C:\\Users\\emjak\\.nuget\\packages\\libgit2sharp\\0.26.2\\libgit2sharp.0.26.2.nupkg.sha512",
+    "C:\\Users\\emjak\\.nuget\\packages\\libgit2sharp.nativebinaries\\2.0.306\\libgit2sharp.nativebinaries.2.0.306.nupkg.sha512"
   ],
   "logs": []
 }

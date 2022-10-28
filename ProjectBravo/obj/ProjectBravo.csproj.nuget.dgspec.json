@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\ProjectBravo.csproj": {}
+    "C:\\Users\\emjak\\Desktop\\Analysis, Design and Software Architecture\\eksprojekt\\project-description\\ProjectBravo\\ProjectBravo.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\ProjectBravo.csproj": {
+    "C:\\Users\\emjak\\Desktop\\Analysis, Design and Software Architecture\\eksprojekt\\project-description\\ProjectBravo\\ProjectBravo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
+        "projectUniqueName": "C:\\Users\\emjak\\Desktop\\Analysis, Design and Software Architecture\\eksprojekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
         "projectName": "ProjectBravo",
-        "projectPath": "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
-        "packagesPath": "C:\\Users\\tobia\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\obj\\",
+        "projectPath": "C:\\Users\\emjak\\Desktop\\Analysis, Design and Software Architecture\\eksprojekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
+        "packagesPath": "C:\\Users\\emjak\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\emjak\\Desktop\\Analysis, Design and Software Architecture\\eksprojekt\\project-description\\ProjectBravo\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\tobia\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\emjak\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -49,7 +49,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -58,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     }
