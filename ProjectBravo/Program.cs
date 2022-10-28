@@ -1,71 +1,77 @@
-using LibGit2Sharp;
 using System.Globalization;
-
-public class Program
+using LibGit2Sharp;
+if (args.Length > 0)
 {
-    public static void Main(string[] args)
+    if (args.Length > 1 && args[1] == "frequency")
     {
-        if (args[1] == "frequency")
+        using (var repo = new Repository(args[0]))
         {
-            Frequency(args[0]);
-        }
-        if (args[1] == "author")
-        {
-            Author(args[0]);
+            var dateGroups = repo.Commits.GroupBy(
+                commit => commit.Author.When.Date
+            );
+            var dateFormat = "yyyy-MM-dd";
+            foreach (var dateGroup in dateGroups)
+            {
+                Console.WriteLine($"{dateGroup.Count()} {dateGroup.Key.ToString(dateFormat, CultureInfo.InvariantCulture)}");
+            }
         }
     }
-
-    private static void Frequency(string repository)
+    //brr
+    else if (args.Length > 1 && args[1] == "author")
     {
-        using var repo = new Repository(repository);
-            repo.Commits
-                .GroupBy(commit => commit.Author.When.Date)
-                .ToList()
-                .ForEach(
-                    x =>
-                        Console.WriteLine(
-                            $"{x.Count()} {x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"
-                        )
-                );
-    }
+        using (var repo = new Repository(args[0]))
+        {
+            var dateFormat = "yyyy-MM-dd";
 
-    private static void Author(string repository)
-    {
-        using var repo = new Repository(repository);
+            var dateGroups = repo.Commits.GroupBy(
+                commit => commit.Author.When.Date
+            );
+            Dictionary<string, List<Commit>> authorToCommits = new Dictionary<string, List<Commit>>();
+
+            var authors = repo.Commits.Select(commit => commit.Author.Name).Distinct();
+            foreach (var author in authors)
+            {
+                authorToCommits.Add(author, new List<Commit>());
+                foreach (var commit in repo.Commits)
                 {
-                    var dateFormat = "yyyy-MM-dd";
-        
-                    var dateGroups = repo.Commits.GroupBy(
-                        commit => commit.Author.When.Date
-                    );
-                    Dictionary<string, List<Commit>> authorToCommits = new Dictionary<string, List<Commit>>();
-        
-                    var authors = repo.Commits.Select(commit => commit.Author.Name).Distinct();
-                    foreach (var author in authors)
+                    if (commit.Author.Name == author)
                     {
-                        authorToCommits.Add(author, new List<Commit>());
-                        foreach (var commit in repo.Commits)
-                        {
-                            if (commit.Author.Name == author)
-                            {
-                                authorToCommits[author].Add(commit);
-                            }
-                        }
-                    }
-        
-                    foreach (var author in authorToCommits.Keys)
-                    {
-                        Console.WriteLine(author);
-        
-                        var authorDateCommits = authorToCommits[author].GroupBy(
-                        commit => commit.Author.When.Date
-                    );
-                        foreach (var dateGroup in authorDateCommits)
-                        {
-                            Console.WriteLine($"\t{dateGroup.Count()} {dateGroup.Key.ToString(dateFormat, CultureInfo.InvariantCulture)}");
-                        }
-                        Console.WriteLine();
+                        authorToCommits[author].Add(commit);    
                     }
                 }
+            }
+
+            foreach (var author in authorToCommits.Keys)
+            {
+                Console.WriteLine(author);
+
+                var authorDateCommits = authorToCommits[author].GroupBy(
+                commit => commit.Author.When.Date
+            );
+                foreach (var dateGroup in authorDateCommits)
+                {
+                    Console.WriteLine($"\t{dateGroup.Count()} {dateGroup.Key.ToString(dateFormat, CultureInfo.InvariantCulture)}");
+                }
+                Console.WriteLine();
+            }
+        }
     }
+    else
+    {
+        Console.WriteLine(@"Please provide one of the following: 
+            frequency
+            author");
+    }
+}
+else
+{
+    if (args.Length > 0)
+    {
+        Console.WriteLine($"No command found for {args[1]}.");
+    }
+    else
+    {
+        Console.WriteLine($"No command provided.");
+    }
+
 }
