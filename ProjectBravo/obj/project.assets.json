@@ -8,10 +8,14 @@
           "LibGit2Sharp.NativeBinaries": "[2.0.306]"
         },
         "compile": {
-          "lib/netstandard2.0/LibGit2Sharp.dll": {}
+          "lib/netstandard2.0/LibGit2Sharp.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.0/LibGit2Sharp.dll": {}
+          "lib/netstandard2.0/LibGit2Sharp.dll": {
+            "related": ".pdb;.xml"
+          }
         }
       },
       "LibGit2Sharp.NativeBinaries/2.0.306": {
@@ -142,19 +146,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\tobia\\.nuget\\packages\\": {}
+    "C:\\Users\\tilsi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
+      "projectUniqueName": "C:\\Users\\tilsi\\OneDrive\\Documents\\BDSA-Project\\ProjectBravo\\ProjectBravo.csproj",
       "projectName": "ProjectBravo",
-      "projectPath": "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\ProjectBravo.csproj",
-      "packagesPath": "C:\\Users\\tobia\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\tobia\\OneDrive\\Skrivebord\\BDSA_Projekt\\project-description\\ProjectBravo\\obj\\",
+      "projectPath": "C:\\Users\\tilsi\\OneDrive\\Documents\\BDSA-Project\\ProjectBravo\\ProjectBravo.csproj",
+      "packagesPath": "C:\\Users\\tilsi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\tilsi\\OneDrive\\Documents\\BDSA-Project\\ProjectBravo\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\tobia\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\tilsi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -189,7 +193,8 @@
           "net47",
           "net471",
           "net472",
-          "net48"
+          "net48",
+          "net481"
         ],
         "assetTargetFallback": true,
         "warn": true,
@@ -198,7 +203,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
       }
     }
   }
