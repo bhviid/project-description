@@ -396,3 +396,11 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#bin og obj mapperne
+*.suo
+*.user
+_ReSharper.*
+**/bin/
+**/obj/
+packages
