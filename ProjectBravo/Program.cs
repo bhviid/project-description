@@ -1,6 +1,9 @@
-﻿﻿using CommandLine;
+﻿using ProjectBravo.Infrastructure;
+using CommandLine;
 
-namespace Bravo.Project
+namespace ProjectBravo;
+
+public class Program
 {
     public class CommandLineParserOptions
     {
@@ -10,42 +13,40 @@ namespace Bravo.Project
         public string Repository { get; set; }
     }
 
-    class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var result = Parser.Default.ParseArguments<CommandLineParserOptions>(args)
-            .WithParsed(Run)
-            .WithNotParsed(HandleParseError);
+        var result = Parser.Default.ParseArguments<CommandLineParserOptions>(args)
+        .WithParsed(Run)
+        .WithNotParsed(HandleParseError);
 
+    }
+
+    private static void HandleParseError(IEnumerable<Error> errors)
+    {
+        if (errors.IsVersion())
+        {
+            Console.WriteLine("Version Request");
+            return;
         }
 
-        private static void HandleParseError(IEnumerable<Error> errors)
+        if (errors.IsHelp())
         {
-            if (errors.IsVersion())
-            {
-                Console.WriteLine("Version Request");
-                return;
-            }
-
-            if (errors.IsHelp())
-            {
-                Console.WriteLine("Help Request");
-                return;
-            }
-            Console.WriteLine("Parser Fail");
+            Console.WriteLine("Help Request");
+            return;
         }
+        Console.WriteLine("Parser Fail");
+    }
 
-        private static void Run(CommandLineParserOptions options)
+    private static void Run(CommandLineParserOptions options)
+    {
+        if (options.Mode == "frequency")
         {
-            if (options.Mode == "frequency")
-            {
-                GitInsights.PrintFrequencies(options.Repository);
-            }
-            if (options.Mode == "author")
-            {
-                GitInsights.PrintAuthors(options.Repository);
-            }
+            GitInsights.PrintFrequencies(options.Repository);
+        }
+        if (options.Mode == "author")
+        {
+            GitInsights.PrintAuthors(options.Repository);
         }
     }
+
 }
