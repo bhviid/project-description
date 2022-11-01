@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo", "ProjectBrav
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Tests", "ProjectBravo.Tests\ProjectBravo.Tests.csproj", "{23F42A91-21BB-4265-9BB7-0D2BAA703B80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Infrastructure", "ProjectBravo.Infrastructure\ProjectBravo.Infrastructure.csproj", "{0FD7F411-036B-4AC3-80C0-642D9ABF4D34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Core", "ProjectBravo.Core\ProjectBravo.Core.csproj", "{4C2DF3AE-F55C-45E9-B456-0CC347E7FFD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{23F42A91-21BB-4265-9BB7-0D2BAA703B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23F42A91-21BB-4265-9BB7-0D2BAA703B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23F42A91-21BB-4265-9BB7-0D2BAA703B80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FD7F411-036B-4AC3-80C0-642D9ABF4D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FD7F411-036B-4AC3-80C0-642D9ABF4D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FD7F411-036B-4AC3-80C0-642D9ABF4D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FD7F411-036B-4AC3-80C0-642D9ABF4D34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C2DF3AE-F55C-45E9-B456-0CC347E7FFD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C2DF3AE-F55C-45E9-B456-0CC347E7FFD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C2DF3AE-F55C-45E9-B456-0CC347E7FFD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C2DF3AE-F55C-45E9-B456-0CC347E7FFD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

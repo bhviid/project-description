@@ -16,7 +16,7 @@ public sealed class ProgramTests
         // Arrange
         using var writer = new StringWriter();
         Console.SetOut(writer);
-
+        
         // Act
         var program = Assembly.Load(nameof(ProjectBravo));
 

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using LibGit2Sharp;
 if (args.Length > 0)
 {
@@ -40,7 +40,6 @@ if (args.Length > 0)
                     }
                 }
             }
-
             foreach (var author in authorToCommits.Keys)
             {
                 Console.WriteLine(author);
