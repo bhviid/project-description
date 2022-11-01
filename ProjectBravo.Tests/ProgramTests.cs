@@ -16,11 +16,11 @@ public sealed class ProgramTests
         // Arrange
         using var writer = new StringWriter();
         Console.SetOut(writer);
-        
+
         // Act
         var program = Assembly.Load(nameof(ProjectBravo));
 
-        program.EntryPoint?.Invoke(null, new[] { new string[] { _gitRepoPath, "frequency" } });
+        program.EntryPoint?.Invoke(null, new[] { new string[] { "frequency",_gitRepoPath } });
 
         // Assert
         var output = writer.GetStringBuilder().ToString().TrimEnd();
@@ -46,7 +46,7 @@ public sealed class ProgramTests
         // Act
         var program = Assembly.Load(nameof(ProjectBravo));
 
-        program.EntryPoint?.Invoke(null, new[] { new string[] { _gitRepoPath, "author" } });
+        program.EntryPoint?.Invoke(null, new[] { new string[] { "author",_gitRepoPath } });
 
         // Assert
         var output = writer.GetStringBuilder().ToString().TrimEnd();
