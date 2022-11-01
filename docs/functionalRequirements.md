@@ -1,6 +1,6 @@
 **GitInsight**  is an application made for the course *Analysis, Design and Software Architecture* during autumn 2022 as part of the BSc in Software Development program at IT-University of Copenhagen. The project runs between week 43 and week 49. 
 
-## Functional requirements (week 43)
+## Functional requirements
 ### Software
 * GitInsight is an application that allow users to get insight in the commit frequency and commit authors in their git repositories/projects locally.  
 *  GitInsight should be a C#/.Net Core application. (week 43)
