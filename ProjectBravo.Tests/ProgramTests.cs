@@ -50,8 +50,14 @@ public sealed class ProgramTests
 
         // Assert
         var output = writer.GetStringBuilder().ToString().TrimEnd();
+
+        //Line breaks differ from system to system, 
+        //somtimes it is \n other time it is \r\n, 
+        // this do the magic for us.
+        var nl = Environment.NewLine;
+        
         var expected = 
-            "emjakobsen1\r\n\t6 2022-09-21\r\n\t1 2022-09-18\r\n\t7 2022-09-17\r\n\r\nrakulmaria\r\n\t1 2022-09-21\r\n\r\nGustav\r\n\t1 2022-09-21\r\n\r\nrakul\r\n\t1 2022-09-18\r\n\t1 2022-09-17\r\n\r\nHelgeCPH\r\n\t2 2022-09-16\r\n\t1 2022-09-15\r\n\r\nRasmus Lystrøm\r\n\t1 2022-09-16\r\n\t1 2022-09-15\r\n\t1 2022-09-14\r\n\t2 2021-09-16\r\n\r\nPaolo Tell\r\n\t5 2021-09-17";
+            $"emjakobsen1{nl}\t6 2022-09-21{nl}\t1 2022-09-18{nl}\t7 2022-09-17{nl}{nl}rakulmaria{nl}\t1 2022-09-21{nl}{nl}Gustav{nl}\t1 2022-09-21{nl}{nl}rakul{nl}\t1 2022-09-18{nl}\t1 2022-09-17{nl}{nl}HelgeCPH{nl}\t2 2022-09-16{nl}\t1 2022-09-15{nl}{nl}Rasmus Lystrøm{nl}\t1 2022-09-16{nl}\t1 2022-09-15{nl}\t1 2022-09-14{nl}\t2 2021-09-16{nl}{nl}Paolo Tell{nl}\t5 2021-09-17";
 
         Assert.Equal(expected, output);
     }
