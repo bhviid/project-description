@@ -1,15 +1,51 @@
-﻿﻿public class Program
+﻿using CommandLine;
+
+namespace Bravo.Project
 {
-    public static void Main(string[] args)
+    public class CommandLineParserOptions
     {
-        if (args[0] == "frequency")
+        [Value(0, Required = true, MetaName = "mode", HelpText = "Mode to run.")]
+        public string Mode { get; set; }
+        [Value(1, Required = true, MetaName = "repo", HelpText = "Path to git repository.")]
+        public string Repository { get; set; }
+    }
+
+    class Program
+    {
+        public static void Main(string[] args)
         {
-            GitInsights.PrintFrequencies(args[1]);
+            var result = Parser.Default.ParseArguments<CommandLineParserOptions>(args)
+            .WithParsed(Run)
+            .WithNotParsed(HandleParseError);
+
         }
-        if (args[0] == "author")
+
+        private static void HandleParseError(IEnumerable<Error> errors)
         {
-            GitInsights.PrintAuthors(args[1]);
+            if (errors.IsVersion())
+            {
+                Console.WriteLine("Version Request");
+                return;
+            }
+
+            if (errors.IsHelp())
+            {
+                Console.WriteLine("Help Request");
+                return;
+            }
+            Console.WriteLine("Parser Fail");
+        }
+
+        private static void Run(CommandLineParserOptions options)
+        {
+            if (options.Mode == "frequency")
+            {
+                GitInsights.PrintFrequencies(options.Repository);
+            }
+            if (options.Mode == "author")
+            {
+                GitInsights.PrintAuthors(options.Repository);
+            }
         }
     }
 }
-
