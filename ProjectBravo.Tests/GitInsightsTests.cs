@@ -43,8 +43,14 @@ public class GitInsightsTests : IDisposable
         // Act
         var output = GenerateCommitsByAuthor(_pathToGitString);
 
+        // Does the test require its own test, hmm
+        var outputNumToDate = output[author].GroupBy(c => c.Author.When.Date)
+            .Select(x => (x.Count(), x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)));
+
         // Assert
         output.Keys.Should().Contain(author);
+        outputNumToDate.Should().BeEquivalentTo(commitNumToDate);
+
     }
 
     public static IEnumerable<object[]> Data()
