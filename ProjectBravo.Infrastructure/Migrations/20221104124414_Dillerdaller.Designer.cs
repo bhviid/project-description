@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBravo.Infrastructure;
 
@@ -11,9 +12,10 @@ using ProjectBravo.Infrastructure;
 namespace ProjectBravo.Infrastructure.Migrations
 {
     [DbContext(typeof(GitContext))]
-    partial class GitContextModelSnapshot : ModelSnapshot
+    [Migration("20221104124414_Dillerdaller")]
+    partial class Dillerdaller
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

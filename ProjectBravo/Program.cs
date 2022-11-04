@@ -15,9 +15,22 @@ public class Program
 
     public static void Main(string[] args)
     {
-        var result = Parser.Default.ParseArguments<CommandLineParserOptions>(args)
-        .WithParsed(Run)
-        .WithNotParsed(HandleParseError);
+
+        var factory = new GitContextFactory();
+        var context = factory.CreateDbContext(args);
+
+        context.Repos.Add( new GitRepository{
+            Name = "Etrepo",
+            Authors = new HashSet<Author>{new Author{Name = "Frederik"}},
+            Commits = new HashSet<Commit>{new Commit{Message = "HVASÅ", Date = DateTime.Now, Author = new Author{ Name = "asger"}}},
+            LatestCommitDate = DateTime.Now,
+        });
+        context.SaveChanges();
+        
+        
+        // var result = Parser.Default.ParseArguments<CommandLineParserOptions>(args)
+        // .WithParsed(Run)
+        // .WithNotParsed(HandleParseError);
 
     }
 
