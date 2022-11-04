@@ -1,9 +1,11 @@
 using System.Globalization;
 using LibGit2Sharp;
-static class GitInsights
+
+namespace ProjectBravo;
+public static class GitInsights
 {
     private static string dateFormat = "yyyy-MM-dd";
-    private static List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(string repository)
+    public static List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(string repository)
     {
         using var repo = new Repository(repository);
         return repo.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
