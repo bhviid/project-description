@@ -11,7 +11,7 @@ public static class GitInsights
         return repo.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
     }
 
-    private static Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repository)
+    public static Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repository)
     {
         Dictionary<string, List<Commit>> authorToCommits;
         using var repo = new Repository(repository);
