@@ -6,13 +6,20 @@ using System.Threading.Tasks;
 
 namespace ProjectBravo.Infrastructure;
 
-public class CommitsRepository
+public class CommitsRepository : ICommitRepository
 {
-    public int Id { get; set; }
+    public Task<CommitDTO> CreateAsync(CommitCreateDTO author)
+    {
+        throw new NotImplementedException();
+    }
 
-    public string AuthorId { get; set; }
+    public Task<CommitDTO?> FindAsync(int commitId)
+    {
+        throw new NotImplementedException();
+    }
 
-    public DateTime Date { get; set; }  
-
-    public string? Message { get; set; } 
+    public Task<IReadOnlyCollection<CommitDTO>> ReadAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -2,7 +2,7 @@ namespace ProjectBravo.Infrastructure;
 
 public class AuthorsRepository : IAuthorRepository
 {
-    public Task<AuthorDetailsDTO> CreateAsync(AuthorCreateDTO author)
+    public Task<AuthorDTO> CreateAsync(AuthorCreateDTO author)
     {
         throw new NotImplementedException();
     }

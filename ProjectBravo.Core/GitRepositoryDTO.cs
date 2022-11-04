@@ -1,12 +1,16 @@
 namespace ProjectBravo.Core
 {
-    public record GitRepositoryDTO(int id, string name, DateTime latestCommit, IList<string> authors, IList<int> commitIds);
+    public record GitRepositoryDTO(int Id, string Name, DateTime LatestCommit, IList<string> Authors, IList<int> CommitIds);
 
     public record GitRepositryCreateDTO(
-        string name,
-        IList<string> authors,
-        IList<CommitCreateDTO> commits
+        string Name,
+        IList<string> Authors,
+        IList<CommitCreateDTO> Commits
         );
 
-    public record GitRepositryUpdateDTO();
+    public record GitRepositryUpdateDTO(
+        string Name,
+        IList<string> Authors,
+        IList<int> NewCommitIds
+        );
 }

@@ -1,13 +1,13 @@
 namespace ProjectBravo.Core
 {
     public record AuthorDTO(
-        int id,
-        string name
+        int Id,
+        string Name
     );
 
-    public record AuthorDetailsDTO();
+    //public record AuthorDetailsDTO();
 
-    public record AuthorCreateDTO();
+    public record AuthorCreateDTO(string Name);
 
-    public record AuthorUpdateDTO();
+    public record AuthorUpdateDTO(string newName);
 }

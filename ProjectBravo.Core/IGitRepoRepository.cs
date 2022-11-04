@@ -6,5 +6,7 @@ public interface IGitRepoRepository
 
     Task<GitRepositoryDTO?> FindAsync(string gitRepoName);
 
-    // and so on?
+    Task<IReadOnlyCollection<GitRepositoryDTO>> ReadAsync();
+    Task<GitRepositoryDTO> UpdateAsync(GitRepositryUpdateDTO author);
+    Task DeleteAsync(int authorId);
 }
