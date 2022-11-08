@@ -1,23 +1,68 @@
+using System.Security.Cryptography;
+
 namespace ProjectBravo.Infrastructure;
 
 public class AuthorsRepository : IAuthorRepository
 {
-    public Task<AuthorDTO> CreateAsync(AuthorCreateDTO author)
+    private readonly GitContext _context;
+    public AuthorsRepository(GitContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
-    public Task<AuthorDTO?> FindAsync(int authorId)
+    public async Task<AuthorDTO> CreateAsync(AuthorCreateDTO author)
     {
-        throw new NotImplementedException();
+        var entity = new Author
+        {
+            Name = author.Name,
+        };
+        _context.Authors.Add(entity);
+        await _context.SaveChangesAsync();
+
+        return new AuthorDTO(entity.Id, entity.Name);
+
     }
-    public Task<IReadOnlyCollection<AuthorDTO>> ReadAsync()
+    public async Task<AuthorDTO?> FindAsync(int authorId)
     {
-        throw new NotImplementedException();
+        var entitiy = from ent in _context.Authors
+                      where ent.Id == authorId
+                      select new AuthorDTO(ent.Id, ent.Name);
+
+        return await entitiy.FirstOrDefaultAsync();
+
+
     }
-    public Task<AuthorDTO> UpdateAsync(AuthorUpdateDTO author)
+    public async Task<IReadOnlyCollection<AuthorDTO>> ReadAsync()
     {
-        throw new NotImplementedException();
+        var entity = from ent in _context.Authors
+                     orderby ent.Name
+                     select new AuthorDTO(ent.Id, ent.Name);
+
+        return await entity.ToListAsync();
     }
+    public async Task<Status> UpdateAsync(AuthorDTO author)
+    {
+        var entity = await _context.Authors.FindAsync(author.Id);
+        Status status;
+        if (entity == null)
+        {
+            status = NotFound;
+
+        }
+        else if (await _context.Authors.FirstOrDefaultAsync(a => a.Id != author.Id && a.Name == author.Name) != null)
+        {
+            status = Conflict;
+        }
+        else
+        {
+            entity.Name = author.Name;
+            await _context.SaveChangesAsync();
+            status = Updated;
+
+        }
+        return status;
+
+    }
+
     public Task DeleteAsync(int authorId)
     {
         throw new NotImplementedException();
