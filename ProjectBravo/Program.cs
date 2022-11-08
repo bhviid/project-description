@@ -27,6 +27,7 @@ public class Program
         });
         context.SaveChanges();
         
+        Console.WriteLine("made it this far :D");
         
         // var result = Parser.Default.ParseArguments<CommandLineParserOptions>(args)
         // .WithParsed(Run)

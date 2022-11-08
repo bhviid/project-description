@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 using LibGit2Sharp;
 
 namespace ProjectBravo;
@@ -9,6 +10,11 @@ public static class GitInsights
     {
         using var repo = new Repository(repository);
         return repo.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
+    }
+
+    public static List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(Repository repository)
+    {
+        return repository.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
     }
 
     public static Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repository)
@@ -37,16 +43,22 @@ public static class GitInsights
     return authorToCommits;
     }
 
-    public static void PrintFrequencies(string repository)
+    public static string GetFrequencyString(List<IGrouping<DateTime, Commit>> brr)
     {
-        GenerateCommitsByDate(repository).ForEach(
+        var sb = new StringBuilder();
+        brr.ForEach(
             x =>
-                Console.WriteLine(
-                    $"{x.Count()} {x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"
+                sb.Append(
+                    $"{x.Count()} {x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}\n"
                 )
         );
+        return sb.ToString();
     }
 
+    public static void PrintFrequencies(string repository)
+    {
+        Console.WriteLine(GetFrequencyString(GenerateCommitsByDate(repository)));
+    }
 
     public static void PrintAuthors(string repository)
     {
@@ -64,5 +76,10 @@ public static class GitInsights
             }
             Console.WriteLine();
         }
+    }
+    public static Repository CloneGithubRepo(string githubuser, string repoName)
+    {
+        string path = Repository.Clone($"https://github.com/{githubuser}/{repoName}.git", "clonedRepo");
+        return new Repository(path);
     }
 }
