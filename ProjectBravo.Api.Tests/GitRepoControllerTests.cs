@@ -1,15 +1,21 @@
 using NSubstitute.ReturnsExtensions;
-using ProjectBravo.Core;
+
 
 namespace ProjectBravo.Api.Tests
 {
-    public class MinimalApiTests
+    public class GitRepoControllerTests
     {
         private readonly IGitRepoRepository _substituteRepo;
+        private readonly GitRepoController _sut;
 
-        public MinimalApiTests()
+        public GitRepoControllerTests()
         {
+            //Maybe we want to substitute the GitInsights class to?
+            // that way we can actually control what the controller does?
+
             _substituteRepo = Substitute.For<IGitRepoRepository>();
+
+            _sut = new GitRepoController(_substituteRepo);
         }
 
         [Fact]
@@ -19,9 +25,10 @@ namespace ProjectBravo.Api.Tests
             _substituteRepo.FindAsync(Arg.Any<string>()).ReturnsNull();
 
             // Act
-            var 
+            var res = _sut.GetFrequency("bhviid", "project-description");
 
             // Assert
+            res.Should().Be()
         }
     }
 }

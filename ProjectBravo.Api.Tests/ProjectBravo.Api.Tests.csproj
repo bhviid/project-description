@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProjectBravo.Api\ProjectBravo.Api.csproj" />
     <ProjectReference Include="..\ProjectBravo.Core\ProjectBravo.Core.csproj" />
-    <ProjectReference Include="..\ProjektBravo.Api\ProjectBravo.Api.csproj" />
   </ItemGroup>
 
 </Project>
