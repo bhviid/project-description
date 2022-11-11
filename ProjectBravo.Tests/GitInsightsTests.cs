@@ -1,18 +1,20 @@
 ﻿using System.Globalization;
 using System.IO.Compression;
 using FluentAssertions;
-using static ProjectBravo.GitInsights;
 
 namespace ProjectBravo.Tests;
 
 public class GitInsightsTests : IDisposable
 {
     private readonly string _pathToGitString;
+    private readonly GitInsights _sut;
     public GitInsightsTests()
     {
         var pathToGit = new FileInfo(@"../git-test-repos/").Directory.FullName;
         ZipFile.Open(@"../../../git-test-repos/git.zip", 0).ExtractToDirectory(@"../git-test-repos/");
         _pathToGitString = pathToGit + @"/git";
+
+        _sut = new GitInsights();
     }
 
     [Theory]
@@ -27,7 +29,7 @@ public class GitInsightsTests : IDisposable
         // Arrange
 
         // Act
-        var output = GenerateCommitsByDate(_pathToGitString);
+        var output = _sut.GenerateCommitsByDate(_pathToGitString);
 
         // Assert
         output.Should().Contain(x => x.Count() == expectedAmount 
@@ -41,7 +43,7 @@ public class GitInsightsTests : IDisposable
         // Arrange
 
         // Act
-        var output = GenerateCommitsByAuthor(_pathToGitString);
+        var output = _sut.GenerateCommitsByAuthor(_pathToGitString);
 
         // Does the test require its own test, hmm
         var outputNumToDate = output[author].GroupBy(c => c.Author.When.Date)

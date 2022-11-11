@@ -1,68 +1,122 @@
 using System.Globalization;
+using System.Text;
 using LibGit2Sharp;
+using ProjectBravo.Core;
 
 namespace ProjectBravo;
-public static class GitInsights
+public class GitInsights : IGitAnalyzer
 {
     private static string dateFormat = "yyyy-MM-dd";
-    public static List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(string repository)
+
+    public GitInsights()
     {
-        using var repo = new Repository(repository);
-        return repo.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
     }
 
-    public static Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repository)
+    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(string repository)
+    {
+        using var repo = new Repository(repository);
+        return GenerateCommitsByDate(repo);
+    }
+
+    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(Repository repository)
+    {
+        return repository.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
+    }
+
+    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repoPath)
+    {
+        using var repo = new Repository(repoPath);
+        return GenerateCommitsByAuthor(repo);
+    }
+
+    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(Repository repo)
     {
         Dictionary<string, List<Commit>> authorToCommits;
-        using var repo = new Repository(repository);
-        {
-            var dateGroups = repo.Commits.GroupBy(
-                commit => commit.Author.When.Date
-            );
-            authorToCommits = new Dictionary<string, List<Commit>>();
 
-            var authors = repo.Commits.Select(commit => commit.Author.Name).Distinct();
-            foreach (var author in authors)
+        var dateGroups = repo.Commits.GroupBy(
+            commit => commit.Author.When.Date
+        );
+        authorToCommits = new Dictionary<string, List<Commit>>();
+
+        var authors = repo.Commits.Select(commit => commit.Author.Name).Distinct();
+        foreach (var author in authors)
+        {
+            authorToCommits.Add(author, new List<Commit>());
+            foreach (var commit in repo.Commits)
             {
-                authorToCommits.Add(author, new List<Commit>());
-                foreach (var commit in repo.Commits)
+                if (commit.Author.Name == author)
                 {
-                    if (commit.Author.Name == author)
-                    {
-                        authorToCommits[author].Add(commit);
-                    }
+                    authorToCommits[author].Add(commit);
                 }
             }
         }
-    return authorToCommits;
+
+        return authorToCommits;
     }
 
-    public static void PrintFrequencies(string repository)
+    public string GetFrequencyString(Repository repo)
     {
-        GenerateCommitsByDate(repository).ForEach(
+        var brr = GenerateCommitsByDate(repo);
+        var sb = new StringBuilder();
+        brr.ForEach(
             x =>
-                Console.WriteLine(
-                    $"{x.Count()} {x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"
+                sb.Append(
+                    $"{x.Count()} {x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}\n"
                 )
         );
+        return sb.ToString();
     }
 
-
-    public static void PrintAuthors(string repository)
+    public string GetFrequencyString(IEnumerable<CommitDTO> commits)
     {
-        var authorCommits = GenerateCommitsByAuthor(repository);
+        var sb = new StringBuilder();
+        commits.GroupBy(c => c.Date).ToList()
+        .ForEach(
+            x =>
+                sb.Append(
+                    $"{x.Count()} {x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}\n"
+                )
+        );
+        return sb.ToString();
+    }
+
+    public void PrintFrequencies(string repoPath)
+    {
+        var repository = new Repository(repoPath);
+        Console.WriteLine(GetFrequencyString(repository));
+    }
+
+    public void PrintAuthors(string repository)
+    {
+        using var repo = new Repository(repository);
+        Console.Write(GetAuthorString(repo));
+    }
+
+    public string GetAuthorString(Repository repo)
+    {
+        var sb = new StringBuilder();
+
+        var authorCommits = GenerateCommitsByAuthor(repo);
         foreach (var author in authorCommits.Keys)
         {
-            Console.WriteLine(author);
+            sb.Append(author + "\n");
 
             var authorDateCommits = authorCommits[author].GroupBy(
             commit => commit.Author.When.Date
         );
             foreach (var dateGroup in authorDateCommits)
             {
-                Console.WriteLine($"\t{dateGroup.Count()} {dateGroup.Key.ToString(dateFormat, CultureInfo.InvariantCulture)}");
+                sb.Append($"\t{dateGroup.Count()} {dateGroup.Key.ToString(dateFormat, CultureInfo.InvariantCulture)}\n");
+
+                sb.Append("\n");
             }
-            Console.WriteLine();
         }
+        return sb.ToString();
+    }
+
+    public Repository CloneGithubRepo(string githubuser, string repoName)
+    {
+        string path = Repository.Clone($"https://github.com/{githubuser}/{repoName}.git", "clonedRepo");
+        return new Repository(path);
     }
 }
