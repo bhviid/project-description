@@ -8,6 +8,7 @@ namespace ProjectBravo.Api.Tests;
 public class GitRepoControllerTests : IDisposable
 {
     private readonly IGitRepoRepository _substituteRepo;
+    private readonly ICommitRepository _subtituteCommitRepo;
     private readonly IGitAnalyzer _analyzer;
     private readonly GitRepoController _sut;
 
@@ -16,9 +17,10 @@ public class GitRepoControllerTests : IDisposable
     public GitRepoControllerTests()
     {
         _substituteRepo = Substitute.For<IGitRepoRepository>();
+        _subtituteCommitRepo = Substitute.For<ICommitRepository>();
         _analyzer = Substitute.For<IGitAnalyzer>();
 
-        _sut = new GitRepoController(_substituteRepo, _analyzer);
+        _sut = new GitRepoController(_substituteRepo, _subtituteCommitRepo,_analyzer);
 
         string newF = @"../../../git-test-repos-no-zip/";
 
@@ -87,17 +89,16 @@ public class GitRepoControllerTests : IDisposable
             new List<int>() { 2 }
             );
 
-        var clonedRepo = new Repository();
-        clonedRepo.Commit("Yoylo",
-            new Signature("Billy", "Billy@example.com", dateForBillyCommit),
-            new Signature("Billy", "Billy@example.com", dateForBillyCommit),
-            new CommitOptions()
-        );
+        var clonedRepo = new Repository(_pathToGitString);
+
+        var billySign = new Signature("Billy", "Billy@example.com", dateForBillyCommit);
+        clonedRepo.Commit("Yoylo", billySign, billySign);
 
         _substituteRepo.FindAsync(Arg.Any<string>()).Returns(repoInDb);
-        _analyzer.CloneGithubRepo(Arg.Any<string>(), Arg.Any<string>()).Returns(clonedRepo);
+        
+        _analyzer.CloneGithubRepo("Billy", "Billy's-chittychat").Returns(clonedRepo);
 
-        _analyzer.GetFrequencyString(Arg.Is(clonedRepo))
+        _analyzer.GetFrequencyString(Arg.Any<IEnumerable<CommitDTO>>())
             .Returns($"1 {dateForBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
 
         // Act
@@ -109,12 +110,39 @@ public class GitRepoControllerTests : IDisposable
         res.TrimEnd().Should().Be(expected);
     }
 
+    [Fact]
     public async Task Frequency_given_already_seen_repo_newer_version()
     {
         // Arrange
+        var dateForBillyCommit = DateTime.Now.AddDays(-2);
+        var dateForClonedRepo = DateTime.Now;
+        var repoInDb = new GitRepositoryDTO(1, "Billy's-chittychat",
+        dateForBillyCommit,
+        new List<string>() { "Billy" },
+        new List<int>() { 2 }
+        );
+
+        var clonedRepo = new Repository(_pathToGitString);
+        
+        var billySign = new Signature("Billy", "Billy@example.com", dateForClonedRepo);
+        clonedRepo.Commit("Yoylo", billySign, billySign);
+
+        _substituteRepo.FindAsync(Arg.Any<string>()).Returns(repoInDb);
+
+        _subtituteCommitRepo.CreateAsync(Arg.Any<CommitCreateDTO>()).Returns(
+            new CommitDTO(69,dateForClonedRepo, "yoylo", "Billy", "Billy's-chittychat")
+        );
+
+        _analyzer.CloneGithubRepo("Billy", "Billy's-chittychat").Returns(clonedRepo);
+
+        _analyzer.GetFrequencyString(Arg.Any<IEnumerable<CommitDTO>>())
+            .Returns($"1 {dateForClonedRepo.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
 
         // Act
+        var res = await _sut.GetFrequency("Billy", "Billy's-chittychat");
 
         // Assert
+        var expected = $"1 {dateForClonedRepo.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
+        res.TrimEnd().Should().Be(expected);
     }
 }

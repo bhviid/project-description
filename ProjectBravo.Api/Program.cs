@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 string connString = "Server=localhost;Database=tempdb;User Id=sa;Password=<YourStrong@Passw0rd>;Trusted_Connection=False;Encrypt=False";
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GitContext>(options => options.UseSqlServer(connString));
 builder.Services.AddScoped<IGitRepoRepository, GitRepoRepository>();
+builder.Services.AddScoped<IGitAnalyzer, GitInsights>();
 
 var app = builder.Build();
 

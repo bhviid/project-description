@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using LibGit2Sharp;
+using ProjectBravo.Core;
 
 namespace ProjectBravo;
 public class GitInsights : IGitAnalyzer
@@ -66,6 +67,19 @@ public class GitInsights : IGitAnalyzer
         return sb.ToString();
     }
 
+    public string GetFrequencyString(IEnumerable<CommitDTO> commits)
+    {
+        var sb = new StringBuilder();
+        commits.GroupBy(c => c.Date).ToList()
+        .ForEach(
+            x =>
+                sb.Append(
+                    $"{x.Count()} {x.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}\n"
+                )
+        );
+        return sb.ToString();
+    }
+
     public void PrintFrequencies(string repoPath)
     {
         var repository = new Repository(repoPath);
@@ -99,7 +113,7 @@ public class GitInsights : IGitAnalyzer
         }
         return sb.ToString();
     }
-    
+
     public Repository CloneGithubRepo(string githubuser, string repoName)
     {
         string path = Repository.Clone($"https://github.com/{githubuser}/{repoName}.git", "clonedRepo");

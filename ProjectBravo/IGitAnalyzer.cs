@@ -1,10 +1,13 @@
 ﻿using LibGit2Sharp;
+using ProjectBravo.Core;
 
 namespace ProjectBravo;
 
 public interface IGitAnalyzer
 {
     string GetFrequencyString(Repository repo);
+
+    string GetFrequencyString(IEnumerable<CommitDTO> commits);
 
     string GetAuthorString(Repository repo);
 
