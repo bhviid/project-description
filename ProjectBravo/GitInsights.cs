@@ -43,8 +43,9 @@ public static class GitInsights
     return authorToCommits;
     }
 
-    public static string GetFrequencyString(List<IGrouping<DateTime, Commit>> brr)
+    public static string GetFrequencyString(Repository repo)
     {
+        var brr = GenerateCommitsByDate(repo);
         var sb = new StringBuilder();
         brr.ForEach(
             x =>
@@ -55,9 +56,10 @@ public static class GitInsights
         return sb.ToString();
     }
 
-    public static void PrintFrequencies(string repository)
+    public static void PrintFrequencies(string repoPath)
     {
-        Console.WriteLine(GetFrequencyString(GenerateCommitsByDate(repository)));
+        var repository = new Repository(repoPath);
+        Console.WriteLine(GetFrequencyString(repository));
     }
 
     public static void PrintAuthors(string repository)

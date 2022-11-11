@@ -1,39 +1,61 @@
 using LibGit2Sharp;
 using NSubstitute.ReturnsExtensions;
 using System.Globalization;
+using System.IO.Compression;
 
 namespace ProjectBravo.Api.Tests;
 
-public class GitRepoControllerTests
+public class GitRepoControllerTests : IDisposable
 {
     private readonly IGitRepoRepository _substituteRepo;
     private readonly IGitAnalyzer _analyzer;
     private readonly GitRepoController _sut;
 
+    private readonly string _pathToGitString;
+
     public GitRepoControllerTests()
     {
-        //Maybe we want to substitute the GitInsights class to?
-        // that way we can actually control what the controller does?
-
-        // We would wanna make an interface for the gitinsights, then make GitInsights an 
-            //instantiatable class.
-
         _substituteRepo = Substitute.For<IGitRepoRepository>();
         _analyzer = Substitute.For<IGitAnalyzer>();
 
-        _sut = new GitRepoController(_substituteRepo);
+        _sut = new GitRepoController(_substituteRepo, _analyzer);
+
+        string newF = @"../../../git-test-repos-no-zip/";
+
+        var pathToGit = new FileInfo(@"../git-test-repos/").Directory.FullName;
+        ZipFile.Open(@"../../../git-test-repos/git.zip", 0).ExtractToDirectory(newF);
+        _pathToGitString = newF + @"/git/bob/.git/";
+    }
+
+    public void Dispose()
+    {
+        var dir = new System.IO.DirectoryInfo(@"../../../git-test-repos-no-zip/");
+        if (dir.Exists)
+        {
+            setAttributesNormal(dir);
+            dir.Delete(true);
+        }
+    }
+
+    private void setAttributesNormal(DirectoryInfo dir)
+    {
+        foreach (var subDir in dir.GetDirectories())
+        setAttributesNormal(subDir);
+        foreach (var file in dir.GetFiles())
+        {
+            file.Attributes = FileAttributes.Normal;
+        }
     }
 
     [Fact]
     public async Task Frequency_given_fresh_or_unseen_repo()
     {
         // Arrange
-        var newClonedRepo = new Repository();
-        newClonedRepo.Commit("Yoylo",
-            new Signature("Billy", "Billy@example.com", DateTime.Now),
-            new Signature("Billy", "Billy@example.com", DateTime.Now),
-            new CommitOptions()
-            );
+        var newClonedRepo = new Repository(_pathToGitString);
+
+        var author = new Signature("Billy", "Billy@example.com", DateTime.Now);
+
+        var commit = newClonedRepo.Commit("I commited", author, author);
 
         _substituteRepo.FindAsync(Arg.Any<string>()).ReturnsNull();
 
@@ -53,6 +75,7 @@ public class GitRepoControllerTests
         res.TrimEnd().Should().Be(expected);
     }
 
+    [Fact]    
     public async Task Frequency_given_already_seen_repo_same_version()
     {
         // Arrange

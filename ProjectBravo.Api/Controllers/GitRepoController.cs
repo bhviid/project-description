@@ -7,9 +7,11 @@ namespace ProjectBravo.Api.Controllers;
 public class GitRepoController : ControllerBase
 {
     private readonly IGitRepoRepository _dbrepo;
-    public GitRepoController(IGitRepoRepository repo)
+    private readonly IGitAnalyzer _analyzer;
+    public GitRepoController(IGitRepoRepository repo, IGitAnalyzer gitAnalyzer)
     {
         _dbrepo = repo;
+        _analyzer = gitAnalyzer;
     }
 
     [HttpGet()]
@@ -22,7 +24,7 @@ public class GitRepoController : ControllerBase
         if (foundInDb is null)
         {
 
-            var cloned = GitInsights.CloneGithubRepo(github_user, repo_name);
+            var cloned = _analyzer.CloneGithubRepo(github_user, repo_name);
             var authors = cloned.Commits.Select(c => c.Author.Name).Distinct().ToList();
             var commits = cloned.Commits.Select(c =>
                 new CommitCreateDTO(c.Author.When.DateTime, c.Message, c.Author.Name, repo_name))
@@ -31,8 +33,8 @@ public class GitRepoController : ControllerBase
             var s = await _dbrepo.CreateAsync(new GitRepositryCreateDTO(repo_name,
                 authors, commits));
 
-            toReturn = GitInsights.GetFrequencyString(GitInsights.GenerateCommitsByDate(cloned));
-
+            toReturn = _analyzer.GetFrequencyString(cloned);
+            
             //clone repo locally
             //add to database...
         }
