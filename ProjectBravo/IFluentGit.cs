@@ -2,6 +2,10 @@ using ProjectBravo.Core;
 
 namespace ProjectBravo
 {
+    public interface IGitHelper
+    {
+        IFreshGitHelper CreateInstance(IGitRepoRepository gitRepo, ICommitRepository commitRepo);
+    }
 
     public interface IFreshGitHelper
     {

@@ -1,148 +1,157 @@
 using ProjectBravo.Core;
 using LibGit2Sharp;
 
-namespace ProjectBravo;
-
-public class GitHelper : IFreshGitHelper, IClonedGitHelper, IFinalGitHelper
+namespace ProjectBravo
 {
-    private readonly IGitRepoRepository _dbRepoRepo;
-    private readonly ICommitRepository _dbCommitRepo;
-    
-    private Repository? _libgitRepo;
-
-    private GitRepositoryDTO _alreadyInDb;
-
-    private string _githubUser;
-    private string _gitRepoName;
-
-    private ShouldDo _shouldDo;
-    private IList<string> authorsToAdd;
-    private IList<CommitCreateDTO> commitsToAdd;
-    private IList<int> newCommitIds;
-
-    private GitHelper(IGitRepoRepository rRepo, ICommitRepository cRepo)
+    public class GitHelper : IFreshGitHelper, IClonedGitHelper, IFinalGitHelper
     {
-        _dbRepoRepo = rRepo;
-        _dbCommitRepo = cRepo;
-    }
+        private readonly IGitRepoRepository _dbRepoRepo;
+        private readonly ICommitRepository _dbCommitRepo;
 
-    public static IFreshGitHelper CreateInstance(IGitRepoRepository gitRepoDbRepo, ICommitRepository gitCommitDbRepo)
-    {
-        return new GitHelper(gitRepoDbRepo, gitCommitDbRepo);
-    }
+        private Repository? _libgitRepo;
 
-    public IClonedGitHelper ThenCloneGitRepository(string user, string repoName)
-    {
-        _githubUser = user;
-        _gitRepoName = repoName;
-        _libgitRepo = CloneGithubRepo(user, repoName);
-        return this;
-    }
+        private GitRepositoryDTO _alreadyInDb;
 
-    private Repository CloneGithubRepo(string githubUser, string repoName)
-    {
-        string path = Repository.Clone($"https://github.com/{githubUser}/{repoName}.git", $"clonedRepos/{githubUser}/{repoName}");
-        return new Repository(path);
-    }
+        private string _githubUser;
+        private string _gitRepoName;
 
-    public bool IsNewerThanInDb(GitRepositoryDTO that)
-    {
-        _alreadyInDb = that;
-        return that.LatestCommit < _libgitRepo!.Commits.Max(c => c.Author.When.DateTime);
-    }
+        private ShouldDo _shouldDo;
+        private IList<string> authorsToAdd;
+        private IList<CommitCreateDTO> commitsToAdd;
+        private IList<int> newCommitIds;
 
-    public IFinalGitHelper ThenAddNewDbEntry()
-    {
-        authorsToAdd = _libgitRepo!.Commits.Select(c => c.Author.Name).Distinct().ToList();
-        commitsToAdd = _libgitRepo!.Commits.Select(c =>
-            new CommitCreateDTO(c.Author.When.DateTime, c.Message, c.Author.Name, _gitRepoName))
-            .ToList();
+        internal GitHelper(IGitRepoRepository rRepo, ICommitRepository cRepo)
+        {
+            _dbRepoRepo = rRepo;
+            _dbCommitRepo = cRepo;
+        }
 
-        _shouldDo = ShouldDo.CreateNew;
+        public IFreshGitHelper CreateInstance(IGitRepoRepository gitRepoDbRepo, ICommitRepository gitCommitDbRepo)
+        {
+            return new GitHelper(gitRepoDbRepo, gitCommitDbRepo);
+        }
 
-        return this;
-    }
+        public IClonedGitHelper ThenCloneGitRepository(string user, string repoName)
+        {
+            _githubUser = user;
+            _gitRepoName = repoName;
+            _libgitRepo = CloneGithubRepo(user, repoName);
+            return this;
+        }
 
-    public IFinalGitHelper ThenUpdateExistingDbEntry()
-    {
-        _shouldDo = ShouldDo.UpdateExisting;
+        private Repository CloneGithubRepo(string githubUser, string repoName)
+        {
+            string path = Repository.Clone($"https://github.com/{githubUser}/{repoName}.git", $"clonedRepos/{githubUser}/{repoName}");
+            return new Repository(path);
+        }
 
-        authorsToAdd = _libgitRepo!.Commits.Select(c => c.Author.Name).Distinct().ToList();
-        commitsToAdd = _libgitRepo!.Commits
-            .Where(c => _alreadyInDb.LatestCommit <= c.Author.When.DateTime)
-            .Select(c =>
+        public bool IsNewerThanInDb(GitRepositoryDTO that)
+        {
+            _alreadyInDb = that;
+            return that.LatestCommit < _libgitRepo!.Commits.Max(c => c.Author.When.DateTime);
+        }
+
+        public IFinalGitHelper ThenAddNewDbEntry()
+        {
+            authorsToAdd = _libgitRepo!.Commits.Select(c => c.Author.Name).Distinct().ToList();
+            commitsToAdd = _libgitRepo!.Commits.Select(c =>
                 new CommitCreateDTO(c.Author.When.DateTime, c.Message, c.Author.Name, _gitRepoName))
-            .ToList();
+                .ToList();
 
-        return this;
-    }
-    public IFinalGitHelper ThenGetCurrentFromDb()
-    {
-        _shouldDo = ShouldDo.ReadExisting;
+            _shouldDo = ShouldDo.CreateNew;
 
-        return this;
-    }
-
-    public async Task<string> ThenReturnAuthorString()
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<IEnumerable<CommitDTO>> ThenReturnCommits()
-    {
-        if(_shouldDo != ShouldDo.ReadExisting)
-        {
-            await PerformDbAction();
+            return this;
         }
 
-        return await GetCommitsAsync();
-    }
-
-    public async Task<string> ThenReturnFrequencyString()
-    {
-        if(_shouldDo != ShouldDo.ReadExisting)
+        public IFinalGitHelper ThenUpdateExistingDbEntry()
         {
-            await PerformDbAction();
+            _shouldDo = ShouldDo.UpdateExisting;
+
+            authorsToAdd = _libgitRepo!.Commits.Select(c => c.Author.Name).Distinct().ToList();
+            commitsToAdd = _libgitRepo!.Commits
+                .Where(c => _alreadyInDb.LatestCommit <= c.Author.When.DateTime)
+                .Select(c =>
+                    new CommitCreateDTO(c.Author.When.DateTime, c.Message, c.Author.Name, _gitRepoName))
+                .ToList();
+
+            return this;
+        }
+        public IFinalGitHelper ThenGetCurrentFromDb()
+        {
+            _shouldDo = ShouldDo.ReadExisting;
+
+            return this;
         }
 
-        IGitAnalyzer analyzer = new GitInsights();
-        return analyzer.GetFrequencyString(await GetCommitsAsync());
-    }
-
-    private async Task<IEnumerable<CommitDTO>> GetCommitsAsync()
-    {
-        var commitsInDb = await _dbCommitRepo.ReadAsync();
-        return commitsInDb.Where(c => _alreadyInDb.CommitIds.Contains(c.Id)).Select(c => c);
-    }
-
-    private async Task PerformDbAction()
-    {
-        switch (_shouldDo)
+        public async Task<string> ThenReturnAuthorString()
         {
-            case ShouldDo.CreateNew:
-                _alreadyInDb = await _dbRepoRepo.CreateAsync(new GitRepositryCreateDTO(_gitRepoName,
-                    authorsToAdd, commitsToAdd));
-                break;
-            case ShouldDo.UpdateExisting:
-                foreach (var commit in commitsToAdd)
-                {
-                    var temp = commit;
-                    var dto = await _dbCommitRepo.CreateAsync(temp);
-                    newCommitIds.Add(dto.Id);
-                }
-                var updatedRepo = await _dbRepoRepo.UpdateAsync(new GitRepositryUpdateDTO(
-                    _gitRepoName,
-                    authorsToAdd,
-                    newCommitIds
-                ));
-                _alreadyInDb = updatedRepo;
-                break;
+            throw new NotImplementedException();
         }
-    }
 
-    private enum ShouldDo
+        public async Task<IEnumerable<CommitDTO>> ThenReturnCommits()
+        {
+            if (_shouldDo != ShouldDo.ReadExisting)
+            {
+                await PerformDbAction();
+            }
+
+            return await GetCommitsAsync();
+        }
+
+        public async Task<string> ThenReturnFrequencyString()
+        {
+            if (_shouldDo != ShouldDo.ReadExisting)
+            {
+                await PerformDbAction();
+            }
+
+            IGitAnalyzer analyzer = new GitInsights();
+            return analyzer.GetFrequencyString(await GetCommitsAsync());
+        }
+
+        private async Task<IEnumerable<CommitDTO>> GetCommitsAsync()
+        {
+            var commitsInDb = await _dbCommitRepo.ReadAsync();
+            return commitsInDb.Where(c => _alreadyInDb.CommitIds.Contains(c.Id)).Select(c => c);
+        }
+
+        private async Task PerformDbAction()
+        {
+            switch (_shouldDo)
+            {
+                case ShouldDo.CreateNew:
+                    _alreadyInDb = await _dbRepoRepo.CreateAsync(new GitRepositryCreateDTO(_gitRepoName,
+                        authorsToAdd, commitsToAdd));
+                    break;
+                case ShouldDo.UpdateExisting:
+                    foreach (var commit in commitsToAdd)
+                    {
+                        var temp = commit;
+                        var dto = await _dbCommitRepo.CreateAsync(temp);
+                        newCommitIds.Add(dto.Id);
+                    }
+                    var updatedRepo = await _dbRepoRepo.UpdateAsync(new GitRepositryUpdateDTO(
+                        _gitRepoName,
+                        authorsToAdd,
+                        newCommitIds
+                    ));
+                    _alreadyInDb = updatedRepo;
+                    break;
+            }
+        }
+
+        private enum ShouldDo
+        {
+            CreateNew, UpdateExisting, ReadExisting
+        }
+
+    }
+    public class GitHelperInitializer : IGitHelper
     {
-        CreateNew, UpdateExisting, ReadExisting
+        public IFreshGitHelper CreateInstance(IGitRepoRepository gitRepo, ICommitRepository commitRepo)
+        {
+            return new GitHelper(gitRepo, commitRepo);
+        }
     }
 
 }

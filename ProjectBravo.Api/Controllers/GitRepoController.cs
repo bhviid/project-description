@@ -84,21 +84,21 @@ public class GitRepoController : ControllerBase
 
     [HttpGet()]
     [Route("freqeuncy-test/{github_user}/{repo_name}")]
-    public async Task<string> GetFrequency2(string? github_user, string? repo_name)
+    public async Task<string> GetFrequency2(string? github_user, string? repo_name, [FromServices] IGitHelper FluentBoi)
     {
         var foundInDb = await _dbrepo.FindAsync(repo_name!);
         string toReturn;
 
         if (foundInDb is null)
         {
-            toReturn = await GitHelper.CreateInstance(_dbrepo, _commitRepo)
+            toReturn = await FluentBoi.CreateInstance(_dbrepo, _commitRepo)
                         .ThenCloneGitRepository(github_user!, repo_name!)
                         .ThenAddNewDbEntry()
                         .ThenReturnFrequencyString();
         }
         else
         {
-            var helper = GitHelper.CreateInstance(_dbrepo, _commitRepo)
+            var helper = FluentBoi.CreateInstance(_dbrepo, _commitRepo)
                                   .ThenCloneGitRepository(github_user!, repo_name!);
             
             if (helper.IsNewerThanInDb(foundInDb))
