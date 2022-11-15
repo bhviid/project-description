@@ -26,7 +26,7 @@ public class AuthorRepositoryTests
 		_context.SaveChanges();
 	}
 	[Fact]
-	public async void Create_author_async_returns_id_1_and_Asger()
+	public async Task Create_author_async_returns_id_1_and_Asger()
 	{
 		// Given
 		var author = new AuthorCreateDTO("Asger");
@@ -39,27 +39,51 @@ public class AuthorRepositoryTests
 	}
 
 	[Fact]
-	public void FindAsync_should_return_1_and_Frederik()
+	public async Task FindAsync_should_return_1_and_Frederik()
 	{
 		// Given
 		var entitiyId = 1;
 		// When
-		var result = _repo.FindAsync(entitiyId);
+		var result = await _repo.FindAsync(entitiyId);
 		// Then
-		result.Result.Name.Should().Be("Frederik");
-		result.Result.Id.Should().Be(1);
+		result.Name.Should().Be("Frederik");
+		result.Id.Should().Be(1);
 	}
 
 	[Fact]
-	public void TestName()
+	public async Task Update_should_return_status_updated()
 	{
 		// Given
+		var newAuthor = new AuthorDTO(1, "Nyt Navn");
 	
 		// When
-	
+		_repo.UpdateAsync(newAuthor);
+        var result = await _repo.FindAsync(1);
 		// Then
+		result.Name.Should().Be("Nyt Navn");
+
+    }
+
+	[Fact]
+	public async Task Read_async_should_return_name_frederik()
+	{
+		// Given
+		var result = await _repo.ReadAsync();
+		// When
+
+		//Then
+		result.FirstOrDefault().Name.Should().Be("Frederik");
 	}
-	
+
+	[Fact]
+	public async Task Delete_async_should_return_Deleted()
+	{
+		var result = await _repo.DeleteAsync(1);
+
+		result.Should().Be(Status.Deleted);
+
+	}
+
 	
 }
 

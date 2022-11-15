@@ -27,6 +27,7 @@ public class Program
         });
         context.SaveChanges();
         
+        Console.WriteLine("made it this far :D");
         
         // var result = Parser.Default.ParseArguments<CommandLineParserOptions>(args)
         // .WithParsed(Run)
@@ -52,13 +53,14 @@ public class Program
 
     private static void Run(CommandLineParserOptions options)
     {
+        var GI = new GitInsights();
         if (options.Mode == "frequency")
         {
-            GitInsights.PrintFrequencies(options.Repository);
+            GI.PrintFrequencies(options.Repository);
         }
         if (options.Mode == "author")
         {
-            GitInsights.PrintAuthors(options.Repository);
+            GI.PrintAuthors(options.Repository);
         }
     }
 
