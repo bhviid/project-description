@@ -140,6 +140,17 @@ namespace ProjectBravo
             }
         }
 
+        public async Task<List<FrequencyDTO>> ThenReturnFrequencyDTOList()
+        {
+            if (_shouldDo != ShouldDo.ReadExisting)
+            {
+                await PerformDbAction();
+            }
+
+            IGitAnalyzer analyzer = new GitInsights();
+            return analyzer.GenerateFrequencyDTO(await GetCommitsAsync());
+        }
+
         private enum ShouldDo
         {
             CreateNew, UpdateExisting, ReadExisting

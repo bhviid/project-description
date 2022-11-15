@@ -2,6 +2,6 @@
 {
     public record FrequencyDTO(
         int Count,
-        string Date
+        DateTime Date
     );
 }

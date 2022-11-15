@@ -16,6 +16,39 @@ public class GitRepoController : ControllerBase
     }
 
     [HttpGet()]
+    [Route("freqeuncy-dto/{github_user}/{repo_name}")]
+    public async Task<List<FrequencyDTO>> GetFrequencyDTOs(string? github_user, string? repo_name, [FromServices] IGitHelper FluentBoi)
+    {
+        var foundInDb = await _dbrepo.FindAsync(repo_name!);
+        List<FrequencyDTO> toReturn;
+
+        if (foundInDb is null)
+        {
+            toReturn = await FluentBoi.CreateInstance(_dbrepo, _commitRepo)
+                        .ThenCloneGitRepository(github_user!, repo_name!)
+                        .ThenAddNewDbEntry()
+                        .ThenReturnFrequencyDTOList();
+        }
+        else
+        {
+            var helper = FluentBoi.CreateInstance(_dbrepo, _commitRepo)
+                                  .ThenCloneGitRepository(github_user!, repo_name!);
+
+            if (helper.IsNewerThanInDb(foundInDb))
+            {
+                toReturn = await helper.ThenUpdateExistingDbEntry()
+                                 .ThenReturnFrequencyDTOList();
+            }
+            else
+            {
+                toReturn = await helper.ThenGetCurrentFromDb()
+                            .ThenReturnFrequencyDTOList();
+            }
+        }
+        return toReturn;
+    }
+
+    [HttpGet()]
     [Route("freqeuncy/{github_user}/{repo_name}")]
     public async Task<string> GetFrequency(string? github_user, string? repo_name, [FromServices] IGitHelper FluentBoi)
     {

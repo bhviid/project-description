@@ -114,9 +114,14 @@ public class GitInsights : IGitAnalyzer
         return sb.ToString();
     }
 
-    public Repository CloneGithubRepo(string githubuser, string repoName)
+    public List<FrequencyDTO> GenerateFrequencyDTO(IEnumerable<CommitDTO> commits)
     {
-        string path = Repository.Clone($"https://github.com/{githubuser}/{repoName}.git", "clonedRepo");
-        return new Repository(path);
+        var frequencyDTOs = new List<FrequencyDTO>();
+        var byDate = commits.GroupBy(c => c.Date);
+        foreach(var date in byDate)
+        {
+            frequencyDTOs.Add(new FrequencyDTO(date.Count(), date.Key));
+        }
+        return frequencyDTOs;
     }
 }

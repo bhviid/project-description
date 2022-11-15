@@ -27,5 +27,6 @@ namespace ProjectBravo
         Task<string> ThenReturnFrequencyString();
 
         Task<string> ThenReturnAuthorString();
+        Task<List<FrequencyDTO>> ThenReturnFrequencyDTOList();
     }
 }
