@@ -114,4 +114,37 @@ public class GitRepoController : ControllerBase
         }
         return toReturn;
     }
+
+    [HttpGet()]
+    [Route("author/{github_user}/{repo_name}")]
+    public async Task<string> GetAuthor(string github_user, string repo_name, [FromServices] IGitHelper fluentBoi)
+    {
+        var foundInDb = await _dbrepo.FindAsync(repo_name!);
+        string toReturn;
+
+        if(foundInDb is null)
+        {
+            toReturn = await fluentBoi.CreateInstance(_dbrepo, _commitRepo)
+                        .ThenCloneGitRepository(github_user, repo_name)
+                        .ThenAddNewDbEntry()
+                        .ThenReturnAuthorString();
+        }
+        else 
+        {
+            var cloned = fluentBoi.CreateInstance(_dbrepo, _commitRepo)
+                            .ThenCloneGitRepository(github_user, repo_name);
+
+            if(cloned.IsNewerThanInDb(foundInDb))
+            {
+                toReturn = await cloned.ThenUpdateExistingDbEntry()
+                            .ThenReturnAuthorString();
+            }
+            else 
+            {
+                toReturn = await cloned.ThenGetCurrentFromDb()
+                            .ThenReturnAuthorString();
+            }
+        }
+        return toReturn;
+    }
 }
