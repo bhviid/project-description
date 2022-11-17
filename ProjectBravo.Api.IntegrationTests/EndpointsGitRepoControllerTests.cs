@@ -16,7 +16,7 @@ public class EndpointsGitRepoControllerTests : IClassFixture<WebApplicationFacto
         _client = _factory.CreateClient();
     }
 
-    [Theory(Skip = "Missing the persistancy - coming friday :DD")]
+    [Theory]
     [InlineData("/frequency/bhviid/project-description")]
     [InlineData("/author/bhviid/project-description")]
     public async Task Endpoints_returns_successStatusCode(string url)
