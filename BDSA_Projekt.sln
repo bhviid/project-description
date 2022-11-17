@@ -1,25 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo", "ProjectBravo\ProjectBravo.csproj", "{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBravo", "ProjectBravo\ProjectBravo.csproj", "{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Tests", "ProjectBravo.Tests\ProjectBravo.Tests.csproj", "{23F42A91-21BB-4265-9BB7-0D2BAA703B80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBravo.Tests", "ProjectBravo.Tests\ProjectBravo.Tests.csproj", "{23F42A91-21BB-4265-9BB7-0D2BAA703B80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Infrastructure", "ProjectBravo.Infrastructure\ProjectBravo.Infrastructure.csproj", "{0FD7F411-036B-4AC3-80C0-642D9ABF4D34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBravo.Infrastructure", "ProjectBravo.Infrastructure\ProjectBravo.Infrastructure.csproj", "{0FD7F411-036B-4AC3-80C0-642D9ABF4D34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Core", "ProjectBravo.Core\ProjectBravo.Core.csproj", "{4C2DF3AE-F55C-45E9-B456-0CC347E7FFD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBravo.Core", "ProjectBravo.Core\ProjectBravo.Core.csproj", "{4C2DF3AE-F55C-45E9-B456-0CC347E7FFD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Infrastructure.Tests", "ProjectBravo.Infrastructure.Tests\ProjectBravo.Infrastructure.Tests.csproj", "{B4FE9CD4-D7B8-4283-AC7E-98ED77AA2E88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBravo.Infrastructure.Tests", "ProjectBravo.Infrastructure.Tests\ProjectBravo.Infrastructure.Tests.csproj", "{B4FE9CD4-D7B8-4283-AC7E-98ED77AA2E88}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBravo.Api.Tests", "ProjectBravo.Api.Tests\ProjectBravo.Api.Tests.csproj", "{E5817A42-818E-49B8-B8D6-49175917FD80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Api", "ProjectBravo.Api\ProjectBravo.Api.csproj", "{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Api.IntegrationTests", "ProjectBravo.Api.IntegrationTests\ProjectBravo.Api.IntegrationTests.csproj", "{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8558FDFB-59B6-4BEC-B81A-DA63DF071EBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -42,5 +45,23 @@ Global
 		{B4FE9CD4-D7B8-4283-AC7E-98ED77AA2E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4FE9CD4-D7B8-4283-AC7E-98ED77AA2E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4FE9CD4-D7B8-4283-AC7E-98ED77AA2E88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5817A42-818E-49B8-B8D6-49175917FD80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5817A42-818E-49B8-B8D6-49175917FD80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5817A42-818E-49B8-B8D6-49175917FD80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5817A42-818E-49B8-B8D6-49175917FD80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A569217-3000-4CAB-AA14-8EBAC742EE37}
 	EndGlobalSection
 EndGlobal
