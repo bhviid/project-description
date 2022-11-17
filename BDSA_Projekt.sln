@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectBravo.Api.Tests", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Api", "ProjectBravo.Api\ProjectBravo.Api.csproj", "{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectBravo.Api.IntegrationTests", "ProjectBravo.Api.IntegrationTests\ProjectBravo.Api.IntegrationTests.csproj", "{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66A95E55-9F0C-41D0-B8AD-EE1C44CD62AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82EB4DB-4330-48BC-A9F7-EC108BF71E89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
