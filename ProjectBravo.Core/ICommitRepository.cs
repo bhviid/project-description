@@ -1,8 +1,10 @@
-﻿namespace ProjectBravo.Core;
+﻿
+
+namespace ProjectBravo.Core;
 
 public interface ICommitRepository
 {
-    Task<CommitDTO> CreateAsync(CommitCreateDTO author);
-    Task<CommitDTO?> FindAsync(int commitId);
+    Task<(Status, CommitDTO)> CreateAsync(CommitCreateDTO author);
+    Task<(Status, CommitDTO?)> FindAsync(int commitId);
     Task<IReadOnlyCollection<CommitDTO>> ReadAsync();
 }

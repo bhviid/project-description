@@ -8,18 +8,68 @@ namespace ProjectBravo.Infrastructure;
 
 public class CommitsRepository : ICommitRepository
 {
-    public Task<CommitDTO> CreateAsync(CommitCreateDTO author)
+    private readonly GitContext _context;
+    
+    public CommitsRepository(GitContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
+        
+    }
+    public async Task<(Status, CommitDTO)> CreateAsync(CommitCreateDTO commit)
+    {
+        var entity = new Commit
+        {
+            Date = commit.Date,
+            BelongsTo = commit.BelongsTo,
+            Author = new Author(commit.AuthorName),
+            Message = commit.Message,
+        };
+        var exists = await _context.Commits.FirstOrDefaultAsync(c => c.Message == entity.Message);
+
+        if (exists == null)
+        {
+            await _context.Commits.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            CommitDTO dto = new CommitDTO(entity.Id, entity.Date, entity.Message, entity.Author.Name, entity.BelongsTo);
+            return (Created, dto);
+        }
+        else return (Conflict, null);
+       
+
+
+
+
     }
 
-    public Task<CommitDTO?> FindAsync(int commitId)
+    public async Task<(Status, CommitDTO?)> FindAsync(int commitId)
     {
-        throw new NotImplementedException();
+        var entity = from c in _context.Commits
+                     where c.Id == commitId
+                     select c;
+        var dto = await entity.FirstOrDefaultAsync();
+        if (dto != null)
+        {
+            CommitDTO dtoToBeReturned = new CommitDTO(dto.Id, dto.Date, dto.Message, dto.Author.Name, dto.BelongsTo);
+            return (OK, dtoToBeReturned);
+        }
+        else return (Status.NotFound, null);
     }
 
-    public Task<IReadOnlyCollection<CommitDTO>> ReadAsync()
+                        
+
+    public async Task<IReadOnlyCollection<CommitDTO>> ReadAsync()
     {
-        throw new NotImplementedException();
+        var entities = from c in _context.Commits
+                       where c != null
+                       select new CommitDTO(
+                           c.Id,
+                           c.Date,
+                           c.Message,
+                           c.Author.Name,
+                           c.BelongsTo
+                           );
+
+        return await entities.ToListAsync();
     }
 }

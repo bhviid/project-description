@@ -1,6 +1,6 @@
-namespace ProjectBravo.Core
-{
-    public record CommitDTO(
+
+namespace ProjectBravo.Core;
+public record CommitDTO(
         int Id,
         DateTime Date,
         string Message,
@@ -9,9 +9,11 @@ namespace ProjectBravo.Core
     );
 
     public record CommitCreateDTO(
+        //
+        string BelongsTo,
         DateTime Date,
         string Message,
         string AuthorName,
         string RepoName
+        
     );
-}

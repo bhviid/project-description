@@ -1,9 +1,9 @@
-namespace ProjectBravo.Infrastructure;
+  namespace ProjectBravo.Infrastructure;
 
 public class Commit{
     public int Id { get; set; }
 
-    public GitRepository BelongsTo {get; set;}
+    public string BelongsTo {get; set;}
 
     public Author Author {get; set;}
 

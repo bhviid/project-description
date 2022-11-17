@@ -18,13 +18,16 @@ public class Program
 
         var factory = new GitContextFactory();
         var context = factory.CreateDbContext(args);
+        context.Database.EnsureCreated();
 
-        context.Repos.Add( new GitRepository{
+        context.Repos.Add(new GitRepository
+        {
             Name = "Etrepo",
-            Authors = new HashSet<Author>{new Author{Name = "Frederik"}},
-            Commits = new HashSet<Commit>{new Commit{Message = "HVASÅ", Date = DateTime.Now, Author = new Author{ Name = "asger"}}},
+            Authors = new HashSet<Author> { new Author { Name = "Frederik" } },
+            Commits = new HashSet<Commit> { new Commit { Author = new Author { Name = "frederik" }, Message = "A Message", BelongsTo = "frederik", Date = DateTime.Now } },
+        
             LatestCommitDate = DateTime.Now,
-        });
+        });;
         context.SaveChanges();
         
         

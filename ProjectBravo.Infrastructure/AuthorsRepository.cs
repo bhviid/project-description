@@ -14,11 +14,12 @@ public class AuthorsRepository : IAuthorRepository
         var entity = new Author
         {
             Name = author.Name,
+            Email = author.Email,
         };
         _context.Authors.Add(entity);
         await _context.SaveChangesAsync();
 
-        return new AuthorDTO(entity.Id, entity.Name);
+        return new AuthorDTO(entity.Id, entity.Name, entity.Email);
 
     }
     public async Task<AuthorDTO?> FindAsync(int authorId)
@@ -63,9 +64,22 @@ public class AuthorsRepository : IAuthorRepository
 
     }
 
-    public Task DeleteAsync(int authorId)
+    public async Task<Status> DeleteAsync(int authorId)
     {
-        throw new NotImplementedException();
+        var entity = await _context.Authors.FindAsync(authorId);
+        Status status;
+        if (entity == null)
+        {
+            status = NotFound;
+        }
+        else
+        {
+
+            _context.Authors.Remove(entity);
+            await _context.SaveChangesAsync();
+            status = Deleted;
+        }
+        return status;
     }
 
 }
