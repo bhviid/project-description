@@ -5,15 +5,16 @@ public record CommitDTO(
         DateTime Date,
         string Message,
         string AuthorName,
-        string RepoName
+        int RepositoryId
     );
 
     public record CommitCreateDTO(
         //
-        string BelongsTo,
+        int RepositoryId,
         DateTime Date,
         string Message,
         string AuthorName,
+        string Email,
         string RepoName
         
     );

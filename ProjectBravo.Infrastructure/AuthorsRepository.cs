@@ -26,7 +26,7 @@ public class AuthorsRepository : IAuthorRepository
     {
         var entitiy = from ent in _context.Authors
                       where ent.Id == authorId
-                      select new AuthorDTO(ent.Id, ent.Name);
+                      select new AuthorDTO(ent.Id, ent.Name, ent.Email);
 
         return await entitiy.FirstOrDefaultAsync();
 
@@ -36,7 +36,7 @@ public class AuthorsRepository : IAuthorRepository
     {
         var entity = from ent in _context.Authors
                      orderby ent.Name
-                     select new AuthorDTO(ent.Id, ent.Name);
+                     select new AuthorDTO(ent.Id, ent.Name, ent.Email);
 
         return await entity.ToListAsync();
     }

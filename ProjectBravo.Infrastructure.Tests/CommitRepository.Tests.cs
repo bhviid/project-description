@@ -24,7 +24,7 @@ public class CommitRepositoryTests
         _context = context;
         _repo = new CommitsRepository(context); 
         _context.Database.EnsureCreatedAsync();
-        _context.Commits.Add(new Commit { BelongsTo = "etrepo", Date = DateTime.Now, Author = new Author("Frederik"), Message = "Yoyoyo", Id = 1 }); ;
+        _context.Commits.Add(new Commit { RepositoryId = 1, Date = DateTime.Now, Author = new Author("Frederik", "asger@gmail.com"), Message = "Yoyoyo", Id = 1 }); ;
         _context.SaveChanges();
     }
 
@@ -33,7 +33,7 @@ public class CommitRepositoryTests
     public async void CreateAsync_should_return_Frederik()
     {
         //given
-        CommitCreateDTO commit = new CommitCreateDTO("Arepo", DateTime.Parse("10/10-2022"), "amessage", "Frederik", "arepo");
+        CommitCreateDTO commit = new CommitCreateDTO(2, DateTime.Now, "Amessage", "Frederik", "frderik@gmail.com", "arepo");
         var (status, dto) = await _repo.CreateAsync(commit);
 
         status.Should().Be(Status.Created);
@@ -43,7 +43,7 @@ public class CommitRepositoryTests
     public async void CreateAsync_should_return_conflict_and_null()
     {
         //given
-        CommitCreateDTO commit = new CommitCreateDTO("Arepo", DateTime.Parse("10/10-2022"), "Yoyoyo", "Frederik", "arepo");
+        CommitCreateDTO commit = new CommitCreateDTO(2, DateTime.Parse("10/10-2022"), "Yoyoyo", "Frederik", "federik@gmail.com", "arepo");
         var (status, dto) = await _repo.CreateAsync(commit);
 
         status.Should().Be(Status.Conflict);

@@ -30,6 +30,10 @@ namespace ProjectBravo.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("GitRepositoryId")
                         .HasColumnType("int");
 
@@ -55,21 +59,24 @@ namespace ProjectBravo.Infrastructure.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BelongsToId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("GitRepositoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RepositoryId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("BelongsToId");
+                    b.HasIndex("GitRepositoryId");
 
                     b.ToTable("Commits");
                 });
@@ -109,15 +116,11 @@ namespace ProjectBravo.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ProjectBravo.Infrastructure.GitRepository", "BelongsTo")
+                    b.HasOne("ProjectBravo.Infrastructure.GitRepository", null)
                         .WithMany("Commits")
-                        .HasForeignKey("BelongsToId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GitRepositoryId");
 
                     b.Navigation("Author");
-
-                    b.Navigation("BelongsTo");
                 });
 
             modelBuilder.Entity("ProjectBravo.Infrastructure.GitRepository", b =>

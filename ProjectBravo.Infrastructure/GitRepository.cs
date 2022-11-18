@@ -12,6 +12,8 @@ public class GitRepository
 
     public DateTime LatestCommitDate { get; set; }
 
+   
+
 
 
     //public string FrequencyOutput { get; set; }

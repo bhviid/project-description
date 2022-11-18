@@ -20,8 +20,8 @@ public class CommitsRepository : ICommitRepository
         var entity = new Commit
         {
             Date = commit.Date,
-            BelongsTo = commit.BelongsTo,
-            Author = new Author(commit.AuthorName),
+            RepositoryId = commit.RepositoryId,
+            Author = new Author(commit.AuthorName, commit.Email),
             Message = commit.Message,
         };
         var exists = await _context.Commits.FirstOrDefaultAsync(c => c.Message == entity.Message);
@@ -31,7 +31,7 @@ public class CommitsRepository : ICommitRepository
             await _context.Commits.AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            CommitDTO dto = new CommitDTO(entity.Id, entity.Date, entity.Message, entity.Author.Name, entity.BelongsTo);
+            CommitDTO dto = new CommitDTO(entity.Id, entity.Date, entity.Message, entity.Author.Name, entity.RepositoryId);
             return (Created, dto);
         }
         else return (Conflict, null);
@@ -50,7 +50,7 @@ public class CommitsRepository : ICommitRepository
         var dto = await entity.FirstOrDefaultAsync();
         if (dto != null)
         {
-            CommitDTO dtoToBeReturned = new CommitDTO(dto.Id, dto.Date, dto.Message, dto.Author.Name, dto.BelongsTo);
+            CommitDTO dtoToBeReturned = new CommitDTO(dto.Id, dto.Date, dto.Message, dto.Author.Name, dto.RepositoryId);
             return (OK, dtoToBeReturned);
         }
         else return (Status.NotFound, null);
@@ -67,7 +67,7 @@ public class CommitsRepository : ICommitRepository
                            c.Date,
                            c.Message,
                            c.Author.Name,
-                           c.BelongsTo
+                           c.RepositoryId
                            );
 
         return await entities.ToListAsync();

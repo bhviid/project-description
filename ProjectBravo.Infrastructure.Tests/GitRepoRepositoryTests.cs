@@ -16,7 +16,7 @@
 //        var options = new DbContextOptionsBuilder<GitContext>()
 //            .UseSqlite(connection)
 //            .Options;
-        
+
 //        var context = new GitContext(options);
 
 //        _context = context;
@@ -66,11 +66,11 @@
 
 //        // Assert
 //        resultRepo.Name.Should().Be("Etrepo");
-        
+
 //        resultRepo.Authors.Should().NotBeEmpty()
 //            .And.HaveCount(1)
 //            .And.ContainEquivalentOf(new[] { "Frederik" });
-        
+
 //        resultRepo.CommitIds.Should().BeEmpty();
 
 //    }
@@ -93,9 +93,9 @@
 
 //        // Assert
 //        found.Should().NotBeNull();
-        
+
 //        found!.Authors.Should().BeEquivalentTo(new[] { "Frederik" });
-        
+
 //        found.CommitIds.Should().NotBeEmpty()
 //            .And.HaveCount(1);
 //    }
@@ -125,7 +125,9 @@
 //        });
 //        var newCommit = new Commit()
 //        {
-//            Message = "New commit", Date = DateTime.Now, Author = new Author("Billy")
+//            Message = "New commit",
+//            Date = DateTime.Now,
+//            Author = new Author("Billy")
 
 //        };
 //        _context.Commits.Add(newCommit);
@@ -133,9 +135,9 @@
 
 
 //        var toUpdateDto = new GitRepositryUpdateDTO(
-//            "Etrepo", 
-//            new List<string>(){ newCommit.Author.Name },
-//            new List<int>(){ newCommit.Id });
+//            "Etrepo",
+//            new List<string>() { newCommit.Author.Name },
+//            new List<int>() { newCommit.Id });
 
 //        // Act
 //        var updated = await _repo.UpdateAsync(toUpdateDto);
@@ -153,13 +155,13 @@
 //        var toUpdateDto = new GitRepositryUpdateDTO(
 //            "Etrepo",
 //            new List<string>() { "Bob" },
-//            new List<int>() { 1,2});
+//            new List<int>() { 1, 2 });
 
 //        // Act
 
 //        var hmm = await _repo.UpdateAsync(toUpdateDto);
 
 //        // Assert
-        
+
 //    }
 //}

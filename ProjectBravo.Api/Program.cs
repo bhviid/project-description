@@ -10,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GitContext>(options => options.UseSqlServer(connString));
 builder.Services.AddScoped<IGitRepoRepository, GitRepoRepository>();
+builder.Services.AddScoped<ICommitRepository, CommitsRepository>();
 builder.Services.AddScoped<IGitAnalyzer, GitInsights>();
 builder.Services.AddScoped<IGitHelper, GitHelperInitializer>();
 

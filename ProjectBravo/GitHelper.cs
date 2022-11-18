@@ -1,5 +1,6 @@
 using ProjectBravo.Core;
 using LibGit2Sharp;
+using ProjectBravo.Infrastructure;
 
 namespace ProjectBravo
 {
@@ -14,9 +15,10 @@ namespace ProjectBravo
 
         private string _githubUser;
         private string _gitRepoName;
+        private int _repoInDBId;
 
         private ShouldDo _shouldDo;
-        private IList<string> authorsToAdd;
+        private IList<AuthorCreateDTO> authorsToAdd;
         private IList<CommitCreateDTO> commitsToAdd;
         private IList<int> newCommitIds;
 
@@ -24,6 +26,8 @@ namespace ProjectBravo
         {
             _dbRepoRepo = rRepo;
             _dbCommitRepo = cRepo;
+            var (status, RepoInDB) = _dbRepoRepo.FindAsync(_gitRepoName).Result;
+            _repoInDBId = RepoInDB.Id;
         }
 
         public IFreshGitHelper CreateInstance(IGitRepoRepository gitRepoDbRepo, ICommitRepository gitCommitDbRepo)
@@ -53,9 +57,11 @@ namespace ProjectBravo
 
         public IFinalGitHelper ThenAddNewDbEntry()
         {
-            authorsToAdd = _libgitRepo!.Commits.Select(c => c.Author.Name).Distinct().ToList();
+            
+            authorsToAdd = _libgitRepo!.Commits.Select(c =>
+            new AuthorCreateDTO(c.Author.Name, c.Author.Email)).ToList();
             commitsToAdd = _libgitRepo!.Commits.Select(c =>
-                new CommitCreateDTO(c.Author.When.DateTime, c.Message, c.Author.Name, _gitRepoName))
+                new CommitCreateDTO( _repoInDBId, c.Author.When.DateTime, c.Message, c.Author.Name, c.Author.Email, _gitRepoName))
                 .ToList();
 
             _shouldDo = ShouldDo.CreateNew;
@@ -66,12 +72,15 @@ namespace ProjectBravo
         public IFinalGitHelper ThenUpdateExistingDbEntry()
         {
             _shouldDo = ShouldDo.UpdateExisting;
+            var (status, RepoInDB) = _dbRepoRepo.FindAsync(_gitRepoName).Result;
 
-            authorsToAdd = _libgitRepo!.Commits.Select(c => c.Author.Name).Distinct().ToList();
+            authorsToAdd = _libgitRepo!.Commits.Select(c => new AuthorCreateDTO(
+                c.Author.Name,
+                c.Author.Email)).Distinct().ToList();   
             commitsToAdd = _libgitRepo!.Commits
                 .Where(c => _alreadyInDb.LatestCommit <= c.Author.When.DateTime)
                 .Select(c =>
-                    new CommitCreateDTO(c.Author.When.DateTime, c.Message, c.Author.Name, _gitRepoName))
+                    new CommitCreateDTO(RepoInDB.Id, c.Author.When.DateTime, c.Message, c.Author.Name, c.Author.Email, _gitRepoName))
                 .ToList();
 
             return this;
@@ -112,7 +121,9 @@ namespace ProjectBravo
         private async Task<IEnumerable<CommitDTO>> GetCommitsAsync()
         {
             var commitsInDb = await _dbCommitRepo.ReadAsync();
-            return commitsInDb.Where(c => _alreadyInDb.CommitIds.Contains(c.Id)).Select(c => c);
+            return commitsInDb.Where(c => c.RepositoryId == _repoInDBId).ToList();
+            // Frederiks version:
+            //return commitsInDb.Where(c => _alreadyInDb.Commits.Contains(c.Id)).Select(c => c);
         }
 
         private async Task PerformDbAction()
@@ -120,14 +131,15 @@ namespace ProjectBravo
             switch (_shouldDo)
             {
                 case ShouldDo.CreateNew:
-                    _alreadyInDb = await _dbRepoRepo.CreateAsync(new GitRepositryCreateDTO(_gitRepoName,
+                    var (status, dto) = await _dbRepoRepo.CreateAsync(new GitRepositryCreateDTO(_gitRepoName,
                         authorsToAdd, commitsToAdd));
+                    _alreadyInDb = dto;
                     break;
                 case ShouldDo.UpdateExisting:
                     foreach (var commit in commitsToAdd)
                     {
                         var temp = commit;
-                        var dto = await _dbCommitRepo.CreateAsync(temp);
+                        var (HttpStatus, dto) = await _dbCommitRepo.CreateAsync(temp);
                         newCommitIds.Add(dto.Id);
                     }
                     var updatedRepo = await _dbRepoRepo.UpdateAsync(new GitRepositryUpdateDTO(

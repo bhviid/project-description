@@ -22,19 +22,19 @@ public class AuthorRepositoryTests
 		_context = context;
 		_repo = new AuthorsRepository(_context);
 		_context.Database.EnsureCreatedAsync();
-		_context.Add(new Author("Frederik"));
+		_context.Add(new Author("Frederik", "frderik@gmail.com"));
 		_context.SaveChanges();
 	}
 	[Fact(Skip = "not implemented")]
 	public async Task Create_author_async_returns_id_1_and_Asger()
 	{
 		// Given
-		var author = new AuthorCreateDTO("Asger");
+		var author = new AuthorCreateDTO("Asger", "asger@gmail.com");
 		
 		// When
 		var results = await _repo.CreateAsync(author);
 		// Then
-		results.Should().Be(new AuthorDTO(2, "Asger"));
+		results.Should().Be(new AuthorDTO(2, "Asger", "asger@gmail.com"));
 		
 	}
 
@@ -54,7 +54,7 @@ public class AuthorRepositoryTests
 	public async Task Update_should_return_status_updated()
 	{
 		// Given
-		var newAuthor = new AuthorDTO(1, "Nyt Navn");
+		var newAuthor = new AuthorDTO(1, "Nyt Navn", "asger@gmail.com");
 	
 		// When
 		_repo.UpdateAsync(newAuthor);
