@@ -19,26 +19,48 @@
         <option value="author">Author</option>
     </select>
     <div class="mb-2">
-        <button type="submit" class="btn-primary btn">brr</button>
+        <RadzenButton ButtonType="Radzen.ButtonType.Submit" class="btn-primary btn">brr</RadzenButton>
     </div>
 </form>
 
 <span>
     @insights
+    @if (frequencies is not null)
+    {
+        <RadzenChart Style="height: 600px" >
+            <RadzenColumnSeries Data="frequencies"
+                         CategoryProperty="Date"
+                         ValueProperty="Count"
+                         Title="Frequencies"
+                         LineType="LineType.Dashed">
+            </RadzenColumnSeries>
+            <RadzenColumnOptions Radius="5" Width="20"/>
+            <RadzenValueAxis>
+                <RadzenAxisTitle Text="Commits per date" />
+            </RadzenValueAxis>
+        </RadzenChart>
+    }
+
+    
 </span>
 @code {
+
     private string insights = "";
+
+    private IEnumerable<FrequencyDTO> frequencies;
+
     private string mode = "frequency";
     private string githubUser;
     private string githubRepo;
 
     private async Task DisplayInsights()
     {
-        //insights = $"{githubUser} {githubRepo}";
-        var response = await Http.GetAsync($":5050/{mode}/{githubUser}/{githubRepo}");
-        if (response.IsSuccessStatusCode)
-        {
-            insights = await response.Content.ReadAsStringAsync();
-        }
+        //var response = await Http.GetAsync($":5050/girepo/{mode}/{githubUser}/{githubRepo}");
+        var response = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("https://localhost:7009/gitrepo/frequency-test");
+        //if (response.IsSuccessStatusCode)
+        //{
+        //    insights = await response.Content.ReadAsStringAsync();
+        //}
+        frequencies = response;
     }
 }
