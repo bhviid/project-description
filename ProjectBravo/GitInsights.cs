@@ -1,47 +1,51 @@
 using System.Globalization;
+using System.Net.Http.Headers;
 using System.Text;
 using LibGit2Sharp;
 using ProjectBravo.Core;
+using ProjectBravo.Infrastructure;
 
 namespace ProjectBravo;
 public class GitInsights : IGitAnalyzer
 {
     private static string dateFormat = "yyyy-MM-dd";
+    private static HttpClient Client;
 
     public GitInsights()
     {
+        Client = new HttpClient();
     }
 
-    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(string repository)
+    public List<IGrouping<DateTime, LibGit2Sharp.Commit>> GenerateCommitsByDate(string repository)
     {
         using var repo = new Repository(repository);
         return GenerateCommitsByDate(repo);
     }
 
-    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(Repository repository)
+    public List<IGrouping<DateTime, LibGit2Sharp.Commit>> GenerateCommitsByDate(Repository repository)
     {
         return repository.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
     }
 
-    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repoPath)
+    public Dictionary<string, List<LibGit2Sharp.Commit>> GenerateCommitsByAuthor(string repoPath)
     {
         using var repo = new Repository(repoPath);
         return GenerateCommitsByAuthor(repo);
     }
 
-    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(Repository repo)
+    public Dictionary<string, List<LibGit2Sharp.Commit>> GenerateCommitsByAuthor(Repository repo)
     {
-        Dictionary<string, List<Commit>> authorToCommits;
+        Dictionary<string, List<LibGit2Sharp.Commit>> authorToCommits;
 
         var dateGroups = repo.Commits.GroupBy(
             commit => commit.Author.When.Date
         );
-        authorToCommits = new Dictionary<string, List<Commit>>();
+        authorToCommits = new Dictionary<string, List<LibGit2Sharp.Commit>>();
 
         var authors = repo.Commits.Select(commit => commit.Author.Name).Distinct();
         foreach (var author in authors)
         {
-            authorToCommits.Add(author, new List<Commit>());
+            authorToCommits.Add(author, new List<LibGit2Sharp.Commit>());
             foreach (var commit in repo.Commits)
             {
                 if (commit.Author.Name == author)
@@ -119,4 +123,19 @@ public class GitInsights : IGitAnalyzer
         string path = Repository.Clone($"https://github.com/{githubuser}/{repoName}.git", "clonedRepo");
         return new Repository(path);
     }
+
+    static async Task RunAsync()
+    {
+        // Update port # in the following line.
+        Client.BaseAddress = new Uri("http://localhost:64195/");
+        Client.DefaultRequestHeaders.Accept.Clear();
+        Client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+    }
+
+    //    public List<Fork> GetRepoForks(string owner, string repo)
+    //{
+    //    var forkList = new List<Fork>();
+        
+    //}
 }
