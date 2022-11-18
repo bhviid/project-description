@@ -1,4 +1,4 @@
-string connString = "Server=localhost;Database=tempdb;User Id=sa;Password=<YourStrong@Passw0rd>;Trusted_Connection=False;Encrypt=False";
+string connString = "Server=db;Database=tempdb;User Id=sa;Password=<YourStrong@Passw0rd>;Trusted_Connection=False;Encrypt=False";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GitContext>(options => options.UseSqlServer(connString));
 builder.Services.AddScoped<IGitRepoRepository, GitRepoRepository>();
-builder.Services.AddScoped<IGitAnalyzer, GitInsights>();
+builder.Services.AddScoped<ICommitRepository, CommitsRepository>();
 builder.Services.AddScoped<IGitHelper, GitHelperInitializer>();
 
 var app = builder.Build();
@@ -20,6 +20,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using var scope = app.Services.CreateScope();
+
+var context = scope.ServiceProvider.GetRequiredService<GitContext>();
+if (context.Database.GetPendingMigrations().Any())
+{
+    context.Database.Migrate();
 }
 
 app.UseHttpsRedirection();

@@ -16,6 +16,12 @@ public class GitRepoController : ControllerBase
     }
 
     [HttpGet()]
+    public string GetString()
+    {
+        return "Yo you made it this far!";
+    }
+
+    [HttpGet()]
     [Route("freqeuncy-dto/{github_user}/{repo_name}")]
     public async Task<List<FrequencyDTO>> GetFrequencyDTOs(string? github_user, string? repo_name, [FromServices] IGitHelper FluentBoi)
     {
