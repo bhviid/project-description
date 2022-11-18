@@ -15,6 +15,22 @@ public class GitRepoController : ControllerBase
         _commitRepo = cRepo;
     }
 
+    [HttpGet]
+    public string Get() => "API is indeed alive";
+
+    [HttpGet]
+    [Route("frequency-test")]
+    public IEnumerable<FrequencyDTO> GetFreqs()
+    {
+        return new[] {
+        new FrequencyDTO(21, DateTime.Now.AddDays(-2)),
+        new FrequencyDTO(5, DateTime.Now.AddDays(-5)),
+        new FrequencyDTO(6, DateTime.Now.AddDays(-8)),
+        new FrequencyDTO(2, DateTime.Now.AddDays(-12)),
+        new FrequencyDTO(3, DateTime.Now)
+        };
+    }
+
     [HttpGet()]
     [Route("freqeuncy-dto/{github_user}/{repo_name}")]
     public async Task<List<FrequencyDTO>> GetFrequencyDTOs(string? github_user, string? repo_name, [FromServices] IGitHelper FluentBoi)

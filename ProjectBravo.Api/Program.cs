@@ -10,8 +10,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<GitContext>(options => options.UseSqlServer(connString));
 builder.Services.AddScoped<IGitRepoRepository, GitRepoRepository>();
+builder.Services.AddScoped<ICommitRepository, CommitsRepository>();
 builder.Services.AddScoped<IGitAnalyzer, GitInsights>();
 builder.Services.AddScoped<IGitHelper, GitHelperInitializer>();
+
+var corsSpec = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsSpec, policy => policy.AllowAnyOrigin()
+    .AllowAnyHeader()
+    .AllowAnyMethod());
+});
 
 var app = builder.Build();
 
@@ -26,6 +36,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UseCors(corsSpec);
+
 app.MapControllers();
+
 
 app.Run();
