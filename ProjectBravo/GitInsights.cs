@@ -1,7 +1,9 @@
 using System.Globalization;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using LibGit2Sharp;
+using Newtonsoft.Json.Linq;
 using ProjectBravo.Core;
 using ProjectBravo.Infrastructure;
 
@@ -14,6 +16,7 @@ public class GitInsights : IGitAnalyzer
     public GitInsights()
     {
         Client = new HttpClient();
+        RunAsync().GetAwaiter().GetResult();
     }
 
     public List<IGrouping<DateTime, LibGit2Sharp.Commit>> GenerateCommitsByDate(string repository)
@@ -126,16 +129,32 @@ public class GitInsights : IGitAnalyzer
 
     static async Task RunAsync()
     {
-        // Update port # in the following line.
-        Client.BaseAddress = new Uri("http://localhost:64195/");
-        Client.DefaultRequestHeaders.Accept.Clear();
-        Client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
+        Client.BaseAddress = new Uri("https://api.github.com");
+        Client.DefaultRequestHeaders.Clear();
+        Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+        //Client.DefaultRequestHeaders.Add("Authorization", "Bearer <TOKEN>");
     }
 
-    //    public List<Fork> GetRepoForks(string owner, string repo)
-    //{
-    //    var forkList = new List<Fork>();
-        
-    //}
+    public async Task<List<Fork>> GetRepoForks(string owner, string repo)
+    {
+        var forkList = new List<Fork>();
+        var response = await Client.GetAsync($"/repos/{owner}/{repo}/forks");
+        if (response.IsSuccessStatusCode)
+        {
+            var jForks = JArray.Parse(await response.Content.ReadAsStringAsync());
+            foreach (JObject jFork in jForks)
+            {
+                var fork = new Fork();
+                fork.Id = jFork.GetValue("id").Value<int>();
+                fork.Name = jFork.GetValue("name").Value<string>();
+                var forkOwner = new Author();
+                forkOwner.Name = jFork.GetValue("owner.login").Value<string>();
+                forkOwner.Id = jFork.GetValue("owner.id").Value<int>();
+                fork.Owner = forkOwner;
+
+                forkList.Add(fork);
+            }
+        }
+        return forkList;
+    }
 }

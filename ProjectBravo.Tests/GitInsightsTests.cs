@@ -58,35 +58,24 @@ public class GitInsightsTests : IDisposable
     }
 
     [Theory]
-    [InlineData("SilasArildsen", "test")]
-    public void Get_forks(string owner, string repo)
+    [InlineData("silasarildsen", "test")]
+    public async Task Get_forks(string owner, string repo)
     {
         // Arrange
-        var parent = new GitRepository();
-        parent.Id = 0;
-        parent.Name = repo;
-
-        var parentAuthor = new Author();
-        parentAuthor.Id = 0;
-        parentAuthor.Name = owner;
-        parent.Authors = new HashSet<Author>() { parentAuthor };
-        
-
         var fork = new Fork();
-        fork.Id = 1;
+        fork.Id = 567672216;
         fork.Name = "test";
 
-        var forkAuthor = new Author();
-        forkAuthor.Name = "silasarildsen1";
-        forkAuthor.Id = 1;
-        fork.Authors = new HashSet<Author>() { forkAuthor };
+        var forkOwner = new Author();
+        forkOwner.Name = "silasarildsen1";
+        forkOwner.Id = 43112458;
 
-        fork.Parent = parent;
+        fork.Owner = forkOwner;
 
         var expected = new List<Fork>() { fork };
 
         // Act
-        List<Fork> actual = _sut.GetRepoForks(owner, repo);
+        List<Fork> actual = await _sut.GetRepoForks(owner, repo);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);

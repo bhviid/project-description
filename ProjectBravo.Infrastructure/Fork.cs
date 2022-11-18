@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace ProjectBravo.Infrastructure
 {
-    public class Fork : GitRepository
+    public class Fork
     {
-        public GitRepository Parent { get; set; }
+        public int Id { get; set; }
+        public Author Owner { get; set; }
+        public string Name { get; set; }
     }
 }
