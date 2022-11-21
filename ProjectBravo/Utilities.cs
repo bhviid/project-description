@@ -5,7 +5,7 @@ public class Utilities
 {
 
 
-    private static HttpStatusCode StatusConversion(Status status) => status switch
+    public static HttpStatusCode StatusConversion(Status status) => status switch
     {
         Status.OK => HttpStatusCode.OK,
         Status.Created => HttpStatusCode.Created,
