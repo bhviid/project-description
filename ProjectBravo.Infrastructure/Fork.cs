@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectBravo.Infrastructure
 {
-    public class Fork
+    public record Fork
     {
         public int Id { get; set; }
         public Author Owner { get; set; }

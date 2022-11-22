@@ -59,27 +59,40 @@ public class GitInsightsTests : IDisposable
 
     [Theory]
     [InlineData("silasarildsen", "test")]
-    public async Task Get_forks(string owner, string repo)
+    public async Task GetRepoForks_returns_correct_data(string owner, string repo)
     {
         // Arrange
-        var fork = new Fork();
-        fork.Id = 567672216;
-        fork.Name = "test";
+        var expected = new Fork();
+        expected.Id = 567672216;
+        expected.Name = "test";
 
         var forkOwner = new Author();
         forkOwner.Name = "silasarildsen1";
         forkOwner.Id = 43112458;
 
-        fork.Owner = forkOwner;
-
-        var expected = new List<Fork>() { fork };
+        expected.Owner = forkOwner;
 
         // Act
-        List<Fork> actual = await _sut.GetRepoForks(owner, repo);
+        List<Fork> res = await _sut.GetRepoForks(owner, repo);
+        Fork actual = res[3];
 
         // Assert
-        actual.Should().BeEquivalentTo(expected);
+        actual.Id.Should().Be(expected.Id);
+    }
 
+    [Theory]
+    [InlineData("silasarildsen", "test")]
+    public async Task GetRepoForks_returns_right_number_of_forks(string owner, string repo)
+    {
+        // Arrange
+        var expected = 4;
+
+        // Act
+        var res = await _sut.GetRepoForks(owner, repo);
+        var actual = res.Count;
+
+        // Assert
+        actual.Should().Be(expected);
     }
 
     public static IEnumerable<object[]> Data()
@@ -93,6 +106,6 @@ public class GitInsightsTests : IDisposable
 
     public void Dispose()
     {
-        Directory.Delete(new FileInfo(@"../git-test-repos/").Directory.FullName, true);
+        //Directory.Delete(new FileInfo(@"../git-test-repos/").Directory.FullName, true);
     }
 }

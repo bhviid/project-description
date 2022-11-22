@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using LibGit2Sharp;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using ProjectBravo.Core;
 using ProjectBravo.Infrastructure;
@@ -129,10 +130,15 @@ public class GitInsights : IGitAnalyzer
 
     static async Task RunAsync()
     {
+        var configuration = new ConfigurationBuilder().AddUserSecrets<GitInsights>().Build();
+        var provider = configuration.Providers.First();
+        var wouldParse = provider.TryGet("Bravo:GitHubToken", out var token);
         Client.BaseAddress = new Uri("https://api.github.com");
         Client.DefaultRequestHeaders.Clear();
+        Client.DefaultRequestHeaders.UserAgent.TryParseAdd("useragent");
         Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-        //Client.DefaultRequestHeaders.Add("Authorization", "Bearer <TOKEN>");
+        
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     }
 
     public async Task<List<Fork>> GetRepoForks(string owner, string repo)
@@ -148,8 +154,8 @@ public class GitInsights : IGitAnalyzer
                 fork.Id = jFork.GetValue("id").Value<int>();
                 fork.Name = jFork.GetValue("name").Value<string>();
                 var forkOwner = new Author();
-                forkOwner.Name = jFork.GetValue("owner.login").Value<string>();
-                forkOwner.Id = jFork.GetValue("owner.id").Value<int>();
+                forkOwner.Name = jFork.SelectToken("owner.login").Value<string>();
+                forkOwner.Id = jFork.SelectToken("owner.id").Value<int>();
                 fork.Owner = forkOwner;
 
                 forkList.Add(fork);
