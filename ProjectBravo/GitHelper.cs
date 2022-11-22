@@ -115,7 +115,7 @@ namespace ProjectBravo
             return commitsInDb.Where(c => _alreadyInDb.CommitIds.Contains(c.Id)).Select(c => c);
         }
 
-        public async Task<int> ThenReturnAverageCommitsPerAuthorAsync()
+        public async Task<float> ThenReturnAverageCommitsPerAuthorAsync()
         {
             if (_shouldDo != ShouldDo.ReadExisting)
             {
@@ -126,7 +126,7 @@ namespace ProjectBravo
             var numAuthors = commits.Select(x => x.AuthorName).Distinct().Count();
 
             //can there be 0 authors?
-            return commits.Count() / (numAuthors == 0 ? 1 : numAuthors);
+            return (float) (commits.Count() / (numAuthors == 0 ? 1.0 : numAuthors * 1.0));
         }
 
         private async Task PerformDbAction()

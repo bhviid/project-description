@@ -17,6 +17,7 @@
     <select @bind="mode" required class="form-select mb-2" aria-label="Default select example">
         <option value="frequency" selected>Frequency</option>
         <option value="author">Author</option>
+        <option value="average">Gauge!!</option>
     </select>
     <div class="mb-2">
         <RadzenButton ButtonType="Radzen.ButtonType.Submit" class="btn-primary btn">brr</RadzenButton>
@@ -40,6 +41,29 @@
             </RadzenValueAxis>
         </RadzenChart>
     }
+    @if (shouldShowGauge)
+    {
+        <h3>Wow! Check the productivity of contributors for 
+            <b>
+                github/@githubUser/@githubRepo
+            </b>
+        </h3>
+        <RadzenRadialGauge>
+            <RadzenRadialGaugeScale 
+                StartAngle="-150" 
+                EndAngle="150" 
+                Step="2" 
+                Min="0" 
+                Max="20"
+                TickPosition="tickPosition"
+            >
+                <RadzenRadialGaugeScalePointer Value="averageCommit"/>
+                <RadzenRadialGaugeScaleRange From="0" To="8" Fill="green" />
+                <RadzenRadialGaugeScaleRange From="8" To="16" Fill="orange"/>
+                <RadzenRadialGaugeScaleRange From="16" To="20" Fill="red"/>
+            </RadzenRadialGaugeScale>
+        </RadzenRadialGauge>
+    }
 
     
 </span>
@@ -49,18 +73,42 @@
 
     private IEnumerable<FrequencyDTO> frequencies;
 
+    private bool shouldShowGauge = false;
+    private double averageCommit;
+    private GaugeTickPosition tickPosition = GaugeTickPosition.Inside;
+
     private string mode = "frequency";
     private string githubUser;
     private string githubRepo;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Http.BaseAddress = new Uri("https://localhost:7009/gitrepo/");
+    }
+
     private async Task DisplayInsights()
     {
+        shouldShowGauge = false;
+
+        switch(mode)
+        {
+            case "frequency":
+                var response = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("frequency-test");
+                frequencies = response;
+                break;
+            case "average":
+                var responseAverage = await Http.GetFromJsonAsync<float>("average-test");
+                shouldShowGauge = true;
+                averageCommit = responseAverage;
+                averageCommit = 19;
+                break;
+
+        }
         //var response = await Http.GetAsync($":5050/girepo/{mode}/{githubUser}/{githubRepo}");
-        var response = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("https://localhost:7009/gitrepo/frequency-test");
         //if (response.IsSuccessStatusCode)
         //{
         //    insights = await response.Content.ReadAsStringAsync();
         //}
-        frequencies = response;
     }
 }

@@ -31,6 +31,10 @@ public class GitRepoController : ControllerBase
         };
     }
 
+    [HttpGet]
+    [Route("average-test")]
+    public float GetAverageTest() => 32 / 7;
+
     [HttpGet()]
     [Route("freqeuncy-dto/{github_user}/{repo_name}")]
     public async Task<List<FrequencyDTO>> GetFrequencyDTOs(string? github_user, string? repo_name, [FromServices] IGitHelper FluentBoi)
@@ -132,7 +136,7 @@ public class GitRepoController : ControllerBase
 
     [HttpGet()]
     [Route("average-commits/{github_user}/{repo_name}")]
-    public async Task<int> GetAverageCommits(string github_user, string repo_name, [FromServices] IGitHelper fluentBoi)
+    public async Task<float> GetAverageCommits(string github_user, string repo_name, [FromServices] IGitHelper fluentBoi)
     {
         var foundInDb = await _dbrepo.FindAsync(repo_name!);
         string toReturn;
