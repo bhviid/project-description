@@ -1,17 +1,29 @@
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ProjectBravo.Infrastructure;
 
 public class AuthorsRepository : IAuthorRepository
 {
     private readonly GitContext _context;
-    public AuthorsRepository(GitContext context)
+    private readonly AuthorValidator _validator;
+    public AuthorsRepository(GitContext context, AuthorValidator validator)
     {
         _context = context;
+        _validator = validator;
+
     }
-    public async Task<AuthorDTO> CreateAsync(AuthorCreateDTO author)
+    async Task<Results<Created<Author>, ValidationProblem>> CreateAsync(Author author)
     {
-        var entity = new Author
+        var validation = _validator.Validate(author);
+
+        if (!validation.IsValid)
+        {
+            return TypedResults.ValidationProblem(validation.ToDictionary());
+        }
+
+        var entity = new AuthorEntity
         {
             Name = author.Name,
             Email = author.Email,
@@ -19,67 +31,57 @@ public class AuthorsRepository : IAuthorRepository
         _context.Authors.Add(entity);
         await _context.SaveChangesAsync();
 
-        return new AuthorDTO(entity.Id, entity.Name, entity.Email);
+        return TypedResults.Created($"{entity.Id}", author with { Id = entity.id });
 
     }
-    public async Task<AuthorDTO?> FindAsync(int authorId)
+    public async Task<Author> FindAsync(int authorId)
     {
         var entitiy = from ent in _context.Authors
                       where ent.Id == authorId
-                      select new AuthorDTO(ent.Id, ent.Name, ent.Email);
+                      select new Author { Id= ent.Id, Email = ent.Email, Name= ent.Name};
 
-        return await entitiy.FirstOrDefaultAsync();
+        var author = await entitiy.FirstOrDefaultAsync();
+        return author;
 
 
     }
-    public async Task<IReadOnlyCollection<AuthorDTO>> ReadAsync()
+    public async Task<IReadOnlyCollection<Author>> ReadAsync()
     {
         var entity = from ent in _context.Authors
                      orderby ent.Name
-                     select new AuthorDTO(ent.Id, ent.Name, ent.Email);
+                     select new Author { Name = ent.Name, Email = ent.Email, Id = ent.Id};
 
         return await entity.ToListAsync();
     }
-    public async Task<Status> UpdateAsync(AuthorDTO author)
+    public async Task<Results<NoContent, NotFound<int>>> UpdateAsync(int id, Author author)
     {
         var entity = await _context.Authors.FindAsync(author.Id);
-        Status status;
+        
         if (entity == null)
         {
-            status = NotFound;
+            return  TypedResults.NotFound(id);
+        }
+        entity.Name = author.Name;
+        entity.Email = author.Email;
 
-        }
-        else if (await _context.Authors.FirstOrDefaultAsync(a => a.Id != author.Id && a.Name == author.Name) != null)
-        {
-            status = Conflict;
-        }
-        else
-        {
-            entity.Name = author.Name;
-            await _context.SaveChangesAsync();
-            status = Updated;
-
-        }
-        return status;
+        await _context.SaveChangesAsync();
+        return TypedResults.NoContent();
+        
 
     }
 
-    public async Task<Status> DeleteAsync(int authorId)
+    async Task<Results<NoContent, NotFound<int>>> DeleteAsync(int authorId)
     {
         var entity = await _context.Authors.FindAsync(authorId);
-        Status status;
+        
         if (entity == null)
         {
-            status = NotFound;
+            return TypedResults.NotFound(authorId);
         }
-        else
-        {
+        _context.Authors.Remove(entity);
+        await _context.SaveChangesAsync();
 
-            _context.Authors.Remove(entity);
-            await _context.SaveChangesAsync();
-            status = Deleted;
-        }
-        return status;
+        return TypedResults.NoContent();
     }
 
 }

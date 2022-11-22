@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ProjectBravo.Infrastructure;
 
-public class Author{
+public class AuthorEntity{
     public int Id {get; set;}
 
     [Required]
@@ -11,11 +11,11 @@ public class Author{
     [EmailAddress]   
     public string Email { get; set; }
 
-    public Author(string name, string email)
+    public AuthorEntity(string name, string email)
     {
         Name = name;
         Email = email;
     }
 
-    public Author() { }
+    public AuthorEntity() { }
 }
