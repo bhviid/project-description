@@ -80,4 +80,11 @@ public class GitRepoController : ControllerBase
         }
         return toReturn;
     }
+
+    [HttpGet]
+    [Route("forks/{github_user}/{repo_name}")]
+    public async Task<List<ForkDTO>> GetForks(string github_user, string repo_name, [FromServices] IGitAnalyzer analyzer)
+    {
+        return await analyzer.GetRepoForks(github_user, repo_name);
+    }
 }

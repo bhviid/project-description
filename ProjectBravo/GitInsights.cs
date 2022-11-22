@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using System.Xml.Linq;
 using LibGit2Sharp;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
@@ -141,22 +142,19 @@ public class GitInsights : IGitAnalyzer
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     }
 
-    public async Task<List<Fork>> GetRepoForks(string owner, string repo)
+    public async Task<List<ForkDTO>> GetRepoForks(string owner, string repo)
     {
-        var forkList = new List<Fork>();
+        var forkList = new List<ForkDTO>();
         var response = await Client.GetAsync($"/repos/{owner}/{repo}/forks");
         if (response.IsSuccessStatusCode)
         {
             var jForks = JArray.Parse(await response.Content.ReadAsStringAsync());
             foreach (JObject jFork in jForks)
             {
-                var fork = new Fork();
-                fork.Id = jFork.GetValue("id").Value<int>();
-                fork.Name = jFork.GetValue("name").Value<string>();
-                var forkOwner = new Author();
-                forkOwner.Name = jFork.SelectToken("owner.login").Value<string>();
-                forkOwner.Id = jFork.SelectToken("owner.id").Value<int>();
-                fork.Owner = forkOwner;
+                var fork = new ForkDTO(jFork.GetValue("id")!.Value<int>(),
+                    jFork.GetValue("name")!.Value<string>()!,
+                    jFork.SelectToken("owner.id")!.Value<int>(),
+                    jFork.SelectToken("owner.login")!.Value<string>()!);
 
                 forkList.Add(fork);
             }

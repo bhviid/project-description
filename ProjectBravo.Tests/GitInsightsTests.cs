@@ -73,8 +73,8 @@ public class GitInsightsTests : IDisposable
         expected.Owner = forkOwner;
 
         // Act
-        List<Fork> res = await _sut.GetRepoForks(owner, repo);
-        Fork actual = res[3];
+        var res = await _sut.GetRepoForks(owner, repo);
+        var actual = res[3];
 
         // Assert
         actual.Id.Should().Be(expected.Id);
