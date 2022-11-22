@@ -222,4 +222,101 @@ public class GitRepoControllerTests
         // Assert
         res.Should().Be($"2 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
     }
+
+    [Fact]
+    public async Task AverageCommits_given_new_repo_returns_succesfully()
+    {
+        // Arrange
+        var newBillyCommit = DateTime.Now;
+        var billyschat = new GitRepositoryDTO(1, "Billy's-chat",
+                    newBillyCommit,
+                    new List<string>() { "Billy", "Adam" },
+                    new List<int>() {1, 2, 3, 4, 5, 6 }
+                    );
+
+        _substituteRepo.FindAsync("Billy's-chat")
+            .ReturnsNull();
+
+        _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
+                .Returns(_fresh);
+
+        _fresh.ThenCloneGitRepository("Billy", "Billy's-chat")
+            .Returns(_cloned);
+
+        _cloned.ThenAddNewDbEntry().Returns(_final);
+
+        _final.ThenReturnAverageCommitsPerAuthorAsync().Returns(3);
+
+        // Act
+        var res = await _sut.GetAverageCommits("Billy", "Billy's-chat", _helper);
+
+        // Assert
+        res.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task AverageCommits_given_already_known_repo_same_version_returns_succesfully()
+    {
+        // Arrange
+        var previousDate = DateTime.Now;
+        var billyschat = new GitRepositoryDTO(1, "Billy's-chat",
+                    previousDate,
+                    new List<string>() { "Billy", "Adam" },
+                    new List<int>() {1, 2, 3, 4, 5, 6 }
+                    );
+
+        _substituteRepo.FindAsync("Billy's-chat")
+            .Returns(billyschat);
+
+        _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
+                .Returns(_fresh);
+
+        _fresh.ThenCloneGitRepository("Billy", "Billy's-chat")
+            .Returns(_cloned);
+
+        _cloned.IsNewerThanInDb(billyschat).Returns(false);
+        _cloned.ThenGetCurrentFromDb().Returns(_final);
+
+        _final.ThenReturnAverageCommitsPerAuthorAsync().Returns(3);
+
+        // Act
+        var res = await _sut.GetAverageCommits("Billy", "Billy's-chat",_helper);
+
+        // Assert
+        res.Should().Be(3);
+    }
+
+     [Fact]
+    public async Task AverageCommits_given_already_known_repo_new_version_returns_succesfully()
+    {
+        // Arrange
+        var previousDate = DateTime.Now.AddDays(-2);
+
+        var newBillyCommit = DateTime.Now;
+        var billyschat = new GitRepositoryDTO(1, "Billy's-chat",
+                    newBillyCommit,
+                    new List<string>() { "Billy", "Adam" },
+                    new List<int>() {1, 2, 3, 4, 5, 6 }
+                    );
+
+        _substituteRepo.FindAsync("Billy's-chat")
+            .Returns(billyschat);
+
+        _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
+                .Returns(_fresh);
+
+        _fresh.ThenCloneGitRepository("Billy", "Billy's-chat")
+            .Returns(_cloned);
+
+        _cloned.IsNewerThanInDb(billyschat).Returns(true);
+        _cloned.ThenUpdateExistingDbEntry().Returns(_final);
+
+        _final.ThenReturnAverageCommitsPerAuthorAsync().Returns(3);
+
+        // Act
+        var res = await _sut.GetAverageCommits("Billy", "Billy's-chat",_helper);
+
+        // Assert
+        res.Should().Be(3);
+    }
 }
