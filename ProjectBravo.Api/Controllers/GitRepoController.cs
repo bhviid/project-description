@@ -80,4 +80,36 @@ public class GitRepoController : ControllerBase
         }
         return toReturn;
     }
+
+    [HttpGet()]
+    [Route("average-commits/{github_user}/{repo_name}")]
+    public async Task<int> GetAverageCommits(string github_user, string repo_name, [FromServices] IGitHelper fluentBoi)
+    {
+        var foundInDb = await _dbrepo.FindAsync(repo_name!);
+        string toReturn;
+
+        if(foundInDb is null)
+        {
+            return await fluentBoi.CreateInstance(_dbrepo, _commitRepo)
+                        .ThenCloneGitRepository(github_user, repo_name)
+                        .ThenAddNewDbEntry()
+                        .ThenReturnAverageCommitsPerAuthorAsync();
+        }
+        else 
+        {
+            var cloned = fluentBoi.CreateInstance(_dbrepo, _commitRepo)
+                            .ThenCloneGitRepository(github_user, repo_name);
+
+            if(cloned.IsNewerThanInDb(foundInDb))
+            {
+                return await cloned.ThenUpdateExistingDbEntry()
+                            .ThenReturnAverageCommitsPerAuthorAsync();
+            }
+            else 
+            {
+                return await cloned.ThenGetCurrentFromDb()
+                            .ThenReturnAverageCommitsPerAuthorAsync();
+            }
+        }
+    }
 }

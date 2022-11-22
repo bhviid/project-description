@@ -27,5 +27,7 @@ namespace ProjectBravo
         Task<string> ThenReturnFrequencyString();
 
         Task<string> ThenReturnAuthorString();
+
+        Task<int> ThenReturnAverageCommitsPerAuthorAsync();
     }
 }
