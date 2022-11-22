@@ -48,21 +48,23 @@
                 github/@githubUser/@githubRepo
             </b>
         </h3>
-        <RadzenRadialGauge>
-            <RadzenRadialGaugeScale 
-                StartAngle="-150" 
-                EndAngle="150" 
-                Step="2" 
-                Min="0" 
-                Max="20"
-                TickPosition="tickPosition"
-            >
-                <RadzenRadialGaugeScalePointer Value="averageCommit"/>
-                <RadzenRadialGaugeScaleRange From="0" To="8" Fill="green" />
-                <RadzenRadialGaugeScaleRange From="8" To="16" Fill="orange"/>
-                <RadzenRadialGaugeScaleRange From="16" To="20" Fill="red"/>
-            </RadzenRadialGaugeScale>
-        </RadzenRadialGauge>
+        <div class="d-flex align-content-center justify-content-center">
+            <RadzenRadialGauge>
+                <RadzenRadialGaugeScale 
+                    StartAngle="-150" 
+                    EndAngle="150" 
+                    Step="2" 
+                    Min="0" 
+                    Max="20"
+                    TickPosition="tickPosition"
+                >
+                    <RadzenRadialGaugeScalePointer Value="averageCommit"/>
+                    <RadzenRadialGaugeScaleRange From="0" To="8" Fill="green" />
+                    <RadzenRadialGaugeScaleRange From="8" To="16" Fill="orange"/>
+                    <RadzenRadialGaugeScaleRange From="16" To="20" Fill="red"/>
+                </RadzenRadialGaugeScale>
+            </RadzenRadialGauge>
+        </div>
     }
 
     
