@@ -1,0 +1,40 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.4'
+
+services:
+  api:
+    image: projectbravoapi
+    build:
+      context: .
+      dockerfile: ProjectBravo.Api/Dockerfile
+    ports:
+      - 8090:8090
+    depends_on:
+      - db
+    restart: on-failure:2
+  # full published blazor app, tror jeg
+  frontendblazor:
+    image: blazor-appen
+    build:
+      context: .
+      dockerfile: BlazorApp/Dockerfile
+    ports:
+      - 8080:80
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=<YourStrong@Passw0rd>
+    ports:
+      - 1433:1433
+    expose:
+      - 1433
+  #frontend-watch:
+  #  image: mcr.microsoft.com/dotnet/sdk:6.0
+  #  ports: 
+  #    - 8080:80
+  #  volumes:
+  #    - ./BlazorApp:/app
+  #  working_dir: /app
+  #  command: dotnet watch run

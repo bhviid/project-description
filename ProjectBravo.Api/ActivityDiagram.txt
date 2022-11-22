@@ -1,0 +1,23 @@
+stateDiagram
+state choice <<choice>>
+
+get : GET Frequency/Author
+findInDB : Look for repository in Database
+cloneRepo : Clone Repository
+createDBEntry : Create Database entry
+returnFreqString : Return frequency/author string
+retrieveRepo : Retrieve repository from DB
+ensureUpToDateness : Ensure that DB repo is up to date
+
+
+[*] --> get
+get --> findInDB
+findInDB --> choice
+choice --> cloneRepo : Repo not found in DB
+cloneRepo --> createDBEntry
+
+choice --> retrieveRepo : Repo found in DB
+retrieveRepo --> ensureUpToDateness
+ensureUpToDateness --> createDBEntry
+createDBEntry --> returnFreqString
+returnFreqString --> [*]

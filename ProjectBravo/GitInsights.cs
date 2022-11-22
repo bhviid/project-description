@@ -1,47 +1,56 @@
 using System.Globalization;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
+using System.Xml.Linq;
 using LibGit2Sharp;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using ProjectBravo.Core;
+using ProjectBravo.Infrastructure;
 
 namespace ProjectBravo;
 public class GitInsights : IGitAnalyzer
 {
     private static string dateFormat = "yyyy-MM-dd";
+    private static HttpClient Client;
 
     public GitInsights()
     {
+        Client = new HttpClient();
+        RunAsync().GetAwaiter().GetResult();
     }
 
-    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(string repository)
+    public List<IGrouping<DateTime, LibGit2Sharp.Commit>> GenerateCommitsByDate(string repository)
     {
         using var repo = new Repository(repository);
         return GenerateCommitsByDate(repo);
     }
 
-    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(Repository repository)
+    public List<IGrouping<DateTime, LibGit2Sharp.Commit>> GenerateCommitsByDate(Repository repository)
     {
         return repository.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
     }
 
-    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repoPath)
+    public Dictionary<string, List<LibGit2Sharp.Commit>> GenerateCommitsByAuthor(string repoPath)
     {
         using var repo = new Repository(repoPath);
         return GenerateCommitsByAuthor(repo);
     }
 
-    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(Repository repo)
+    public Dictionary<string, List<LibGit2Sharp.Commit>> GenerateCommitsByAuthor(Repository repo)
     {
-        Dictionary<string, List<Commit>> authorToCommits;
+        Dictionary<string, List<LibGit2Sharp.Commit>> authorToCommits;
 
         var dateGroups = repo.Commits.GroupBy(
             commit => commit.Author.When.Date
         );
-        authorToCommits = new Dictionary<string, List<Commit>>();
+        authorToCommits = new Dictionary<string, List<LibGit2Sharp.Commit>>();
 
         var authors = repo.Commits.Select(commit => commit.Author.Name).Distinct();
         foreach (var author in authors)
         {
-            authorToCommits.Add(author, new List<Commit>());
+            authorToCommits.Add(author, new List<LibGit2Sharp.Commit>());
             foreach (var commit in repo.Commits)
             {
                 if (commit.Author.Name == author)
@@ -118,5 +127,38 @@ public class GitInsights : IGitAnalyzer
     {
         string path = Repository.Clone($"https://github.com/{githubuser}/{repoName}.git", "clonedRepo");
         return new Repository(path);
+    }
+
+    static async Task RunAsync()
+    {
+        var configuration = new ConfigurationBuilder().AddUserSecrets<GitInsights>().Build();
+        var provider = configuration.Providers.First();
+        provider.TryGet("token", out var token);
+        Client.BaseAddress = new Uri("https://api.github.com");
+        Client.DefaultRequestHeaders.Clear();
+        Client.DefaultRequestHeaders.UserAgent.TryParseAdd("useragent");
+        Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+        
+        Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+    }
+
+    public async Task<List<ForkDTO>> GetRepoForks(string owner, string repo)
+    {
+        var forkList = new List<ForkDTO>();
+        var response = await Client.GetAsync($"/repos/{owner}/{repo}/forks");
+        if (response.IsSuccessStatusCode)
+        {
+            var jForks = JArray.Parse(await response.Content.ReadAsStringAsync());
+            foreach (JObject jFork in jForks)
+            {
+                var fork = new ForkDTO(jFork.GetValue("id")!.Value<int>(),
+                    jFork.GetValue("name")!.Value<string>()!,
+                    jFork.SelectToken("owner.id")!.Value<int>(),
+                    jFork.SelectToken("owner.login")!.Value<string>()!);
+
+                forkList.Add(fork);
+            }
+        }
+        return forkList;
     }
 }

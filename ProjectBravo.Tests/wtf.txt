@@ -1,0 +1,62 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ProjectBravo.Core -> C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Core\bin\Debug\net6.0\ProjectBravo.Core.dll
+  ProjectBravo.Infrastructure -> C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Infrastructure\bin\Debug\net6.0\ProjectBravo.Infrastructure.dll
+  ProjectBravo -> C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo\bin\Debug\net6.0\ProjectBravo.dll
+C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\ProgramTests.cs(14,41): warning CS8602: Dereference of a possibly null reference. [C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\ProjectBravo.Tests.csproj]
+C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\GitInsightsTests.cs(13,12): warning CS8618: Non-nullable field '_pathToGitString' must contain a non-null value when exiting constructor. Consider declaring the field as nullable. [C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\ProjectBravo.Tests.csproj]
+C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\GitInsightsTests.cs(11,29): warning CS0169: The field 'GitInsightsTests._pathToGitString' is never used [C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\ProjectBravo.Tests.csproj]
+C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\ProgramTests.cs(51,62): warning xUnit1026: Theory method 'Program_given_commit_author_frequency' on test class 'ProgramTests' does not use parameter 'dirPathname'. Use the parameter, or remove the parameter and associated data. [C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\ProjectBravo.Tests.csproj]
+  ProjectBravo.Tests -> C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\bin\Debug\net6.0\ProjectBravo.Tests.dll
+Test run for C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\bin\Debug\net6.0\ProjectBravo.Tests.dll (.NETCoreApp,Version=v6.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.3.1 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed ProjectBravo.Tests.GitInsightsTests.Check_All_Test_Repos_Against_Text_File_Frequency [16 s]
+  Error Message:
+   Expected res to be "4 2016-04-04
+
+3 2018-10-31
+
+4 2016-04-04
+
+2 2015-07-21
+1 2015-04-08
+1 2014-11-17
+3 2014-09-28
+6 2014-09-26
+
+1 2020-01-30
+
+10 2020-02-29
+4 2020-02-03
+
+3 2016-10-08
+
+4 2016-11-21
+
+6 2020-04-05
+1 2020-04-04
+1 2020-04-02
+2 2020-03-17
+6 2020-03-14
+3 2020-03-10
+
+12 2019-04-16
+" with a length of 280, but "4 2016-04-04
+" has a length of 14, differs near "
+" (index 12).
+  Stack Trace:
+     at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
+   at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
+   at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
+   at FluentAssertions.Primitives.StringEqualityValidator.ValidateAgainstLengthDifferences()
+   at FluentAssertions.Primitives.StringValidator.Validate()
+   at FluentAssertions.Primitives.StringAssertions`1.Be(String expected, String because, Object[] becauseArgs)
+   at ProjectBravo.Tests.GitInsightsTests.Check_All_Test_Repos_Against_Text_File_Frequency() in C:\Users\tilsi\OneDrive\Documents\BDSA-Project\ProjectBravo.Tests\GitInsightsTests.cs:line 80
+
+Failed!  - Failed:     1, Passed:     2, Skipped:     0, Total:     3, Duration: 13 s - ProjectBravo.Tests.dll (net6.0)
