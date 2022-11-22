@@ -1,44 +1,31 @@
-string connString = "Server=localhost;Database=tempdb;User Id=sa;Password=<YourStrong@Passw0rd>;Trusted_Connection=False;Encrypt=False";
+﻿// This application entry point is based on ASP.NET Core new project templates and is included
+// as a starting point for app host configuration.
+// This file may need updated according to the specific scenario of the application being upgraded.
+// For more information on ASP.NET Core hosting, see https://docs.microsoft.com/aspnet/core/fundamentals/host/web-host
 
-var builder = WebApplication.CreateBuilder(args);
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<GitContext>(options => options.UseSqlServer(connString));
-builder.Services.AddScoped<IGitRepoRepository, GitRepoRepository>();
-builder.Services.AddScoped<ICommitRepository, CommitsRepository>();
-builder.Services.AddScoped<IGitAnalyzer, GitInsights>();
-builder.Services.AddScoped<IGitHelper, GitHelperInitializer>();
-
-var corsSpec = "_myAllowSpecificOrigins";
-
-builder.Services.AddCors(options =>
+namespace ProjectBravo.Api
 {
-    options.AddPolicy(name: corsSpec, policy => policy.AllowAnyOrigin()
-    .AllowAnyHeader()
-    .AllowAnyMethod());
-});
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.UseCors(corsSpec);
-
-app.MapControllers();
-
-
-app.Run();
