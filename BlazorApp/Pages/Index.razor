@@ -1,25 +1,27 @@
 ﻿@page "/"
 @inject HttpClient Http
 
-<PageTitle>Index</PageTitle>
+<PageTitle>GitInsights</PageTitle>
 
-<h1>Git Insights</h1>
+<!--<h1>GitInsights</h1>-->
+
 
 <form @onsubmit="DisplayInsights">
     <div class="form-floating mb-3">
         <input @bind-value="githubUser" required type="text" class="form-control" id="floatingInput" placeholder="name@example.com">
-        <label for="floatingInput">Github Username</label>
+        <label for="floatingInput">Github username</label>
     </div>
     <div class="form-floating mb-3">
         <input @bind-value="githubRepo" required type="text" class="form-control" id="floatingPassword" placeholder="Password">
-        <label for="floatingPassword">Github Repo Name</label>
+        <label for="floatingPassword">Github repository name</label>
     </div>
     <select @bind="mode" required class="form-select mb-2" aria-label="Default select example">
         <option value="frequency" selected>Frequency</option>
         <option value="author">Author</option>
     </select>
     <div class="mb-2">
-        <RadzenButton ButtonType="Radzen.ButtonType.Submit" class="btn-primary btn">brr</RadzenButton>
+        <RadzenButton Shade="Shade.Darker" ButtonStyle="ButtonStyle.Dark" ButtonType="Radzen.ButtonType.Submit" class="btn-primary btn">Load</RadzenButton>
+
     </div>
 </form>
 
