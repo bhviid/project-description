@@ -23,72 +23,78 @@ public class AuthorRepositoryTests
 		_context = context;
         _context.Database.EnsureCreatedAsync();
         _repo = new AuthorsRepository(_context, new AuthorValidator());
-		_context.Add(new AuthorEntity("Frederik", "frderik@gmail.com"));
+		_context.Add(new AuthorEntity("Frederik", "frederik@gmail.com"));
 		_context.SaveChanges();
 	}
 	[Fact]
 	public async Task Create_author_async_returns_id_1_and_Asger()
 	{
 		// Given
-		var author = new Author { Email = "Asger", Name = "asger@gmail.com" };
+		var author = new Author { Name = "Asger", Email= "asger@gmail.com" };
 		
 		// When
 		var results = await _repo.CreateAsync(author);
-		//var created = results.Result as Created<Author>;
+		var created = results.Result as Created<Author>;
 		// Then
 
-		//created.Value.Should().Be(new Author { Id = 2, Name = "Asger", Email = "asger@gmail.com" });
+		created!.Value.Should().Be(new Author { Id = 2, Name = "Asger", Email = "asger@gmail.com" });
 		
 		
 	}
 
-	//[Fact(Skip = "not implemented")]
-	//public async Task FindAsync_should_return_1_and_Frederik()
-	//{
-	//	// Given
-	//	var entitiyId = 1;
-	//	// When
-	//	var result = await _repo.FindAsync(entitiyId);
-	//	// Then
-	//	result.Name.Should().Be("Frederik");
-	//	result.Id.Should().Be(1);
-	//}
+	[Fact]
+	public async Task FindAsync_should_return_1_and_Frederik()
+	{
+		// Given
+		var entitiyId = 1;
+		// When
+		var result = await _repo.FindAsync(entitiyId);
+		// Then
+		var found = result.Result as Ok<Author>;
+		found!.Value.Should().Be(new Author { Id = 1, Name = "Frederik", Email = "frederik@gmail.com" });
+		
+	}
 
-	//[Fact(Skip = "not implemented")]
-	//public async Task Update_should_return_status_updated()
-	//{
-	//	// Given
-	//	var newAuthor = new AuthorDTO(1, "Nyt Navn", "asger@gmail.com");
-	
-	//	// When
-	//	_repo.UpdateAsync(newAuthor);
- //       var result = await _repo.FindAsync(1);
-	//	// Then
-	//	result.Name.Should().Be("Nyt Navn");
+	[Fact]
+	public async Task Update_should_return_status_updated()
+	{
+		// Given
+		var author = new Author {  Name = "New name", Email = "new@mail.com" };
+		
 
- //   }
+		// When
+		var result = await _repo.UpdateAsync(1, author);
+        result.Result.Should().BeOfType<NoContent>();
+        var found = await _repo.FindAsync(1);
 
-	//[Fact(Skip = "not implemented")]
-	//public async Task Read_async_should_return_name_frederik()
-	//{
-	//	// Given
-	//	var result = await _repo.ReadAsync();
-	//	// When
+        // Then
+        var updated = found.Result as Ok<Author>;
+        updated!.Value.Should().Be(new Author { Id = 1, Name = "New name", Email = "new@mail.com" });
 
-	//	//Then
-	//	result.FirstOrDefault().Name.Should().Be("Frederik");
-	//}
 
-	//[Fact(Skip = "not implemented")]
-	//public async Task Delete_async_should_return_Deleted()
-	//{
-	//	//var result = await _repo.DeleteAsync(1);
+    }
 
-	//	//result.Should().Be(Status.Deleted);
+	[Fact]
+	public async Task Read_async_should_return_name_frederik()
+	{
+		// Given
+		var result = await _repo.ReadAsync();
+		// When
 
-	//}
+		//Then
+		result.FirstOrDefault()!.Name.Should().Be("Frederik");
+	}
 
-	
+	[Fact]
+	public async Task Delete_async_should_return_Deleted()
+	{
+		var result = await _repo.DeleteAsync(1);
+		var deleted = result.Result;
+		deleted.Should().BeOfType<NoContent>();
+
+	}
+
+
 }
 
 
