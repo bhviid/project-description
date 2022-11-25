@@ -1,0 +1,44 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Index</PageTitle>
+
+<h1>Git Insights</h1>
+
+<form @onsubmit="DisplayInsights">
+    <div class="form-floating mb-3">
+        <input @bind-value="githubUser" required type="text" class="form-control" id="floatingInput" placeholder="name@example.com">
+        <label for="floatingInput">Github Username</label>
+    </div>
+    <div class="form-floating mb-3">
+        <input @bind-value="githubRepo" required type="text" class="form-control" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword">Github Repo Name</label>
+    </div>
+    <select @bind="mode" required class="form-select mb-2" aria-label="Default select example">
+        <option value="frequency" selected>Frequency</option>
+        <option value="author">Author</option>
+    </select>
+    <div class="mb-2">
+        <button type="submit" class="btn-primary btn">brr</button>
+    </div>
+</form>
+
+<span>
+    @insights
+</span>
+@code {
+    private string insights = "";
+    private string mode = "frequency";
+    private string githubUser;
+    private string githubRepo;
+
+    private async Task DisplayInsights()
+    {
+        //insights = $"{githubUser} {githubRepo}";
+        var response = await Http.GetAsync($":5050/{mode}/{githubUser}/{githubRepo}");
+        if (response.IsSuccessStatusCode)
+        {
+            insights = await response.Content.ReadAsStringAsync();
+        }
+    }
+}

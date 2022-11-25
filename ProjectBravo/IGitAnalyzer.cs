@@ -15,4 +15,6 @@ public interface IGitAnalyzer
         // Men kunne evt. lade GitRepositoryDTO holde en liste af CommitDTO.
         // På den måde slipper api fuldstændigt uden om Repo, og vi bruger vores onion-struktur.
     Repository CloneGithubRepo(string user, string repoName);
+
+    public Task<List<ForkDTO>> GetRepoForks(string owner, string repo);
 }
