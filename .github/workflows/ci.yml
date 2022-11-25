@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -37,3 +38,5 @@ jobs:
 
       - name: Test
         run: dotnet test --filter FullyQualifiedName\!~IntegrationTests
+        env:
+            github_token: ${{ secrets.GITHUB_TOKEN }}

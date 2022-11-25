@@ -131,14 +131,17 @@ public class GitInsights : IGitAnalyzer
 
     static async Task RunAsync()
     {
-        var configuration = new ConfigurationBuilder().AddUserSecrets<GitInsights>().Build();
-        var provider = configuration.Providers.First();
-        provider.TryGet("token", out var token);
         Client.BaseAddress = new Uri("https://api.github.com");
         Client.DefaultRequestHeaders.Clear();
         Client.DefaultRequestHeaders.UserAgent.TryParseAdd("useragent");
         Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-        
+
+        //var configuration = new ConfigurationBuilder().AddUserSecrets<GitInsights>().Build();
+        //var provider = configuration.Providers.First();
+        //provider.TryGet("token", out var token);
+
+        var token = Environment.GetEnvironmentVariable("github_token");
+
         Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
     }
 
