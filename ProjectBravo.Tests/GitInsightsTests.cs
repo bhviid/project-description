@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO.Compression;
 using FluentAssertions;
+using ProjectBravo.Core;
 using ProjectBravo.Infrastructure;
 
 namespace ProjectBravo.Tests;
@@ -66,22 +67,19 @@ public class GitInsightsTests : IDisposable
     public async Task GetRepoForks_returns_correct_data(string owner, string repo)
     {
         // Arrange
-        var expected = new Fork();
-        expected.Id = 567672216;
-        expected.Name = "test";
-
-        var forkOwner = new Author();
-        forkOwner.Name = "silasarildsen1";
-        forkOwner.Id = 43112458;
-
-        expected.Owner = forkOwner;
+        var expected = new ForkDTO(
+                Id: 567672216,
+                Name: "test",
+                AuthorId: 43112458,
+                AuthorName: "silasarildsen1"
+            );
 
         // Act
         var res = await _sut.GetRepoForks(owner, repo);
         var actual = res[3];
 
         // Assert
-        actual.Id.Should().Be(expected.Id);
+        actual.Should().Be(expected);
     }
 
     [Theory]
