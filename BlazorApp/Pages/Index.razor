@@ -5,51 +5,100 @@
 
 <!--<h1>GitInsights</h1>-->
 
+<p>
+    @mode
+</p>
 
 <form @onsubmit="DisplayInsights">
     <div class="form-floating mb-3">
-        <input @bind-value="githubUser" required type="text" class="form-control" id="floatingInput" placeholder="name@example.com">
+        <input @bind-value="githubUser" required type="text" class="form-control" id="floatingInput"
+            placeholder="name@example.com">
         <label for="floatingInput">Github username</label>
     </div>
     <div class="form-floating mb-3">
-        <input @bind-value="githubRepo" required type="text" class="form-control" id="floatingPassword" placeholder="Password">
+        <input @bind-value="githubRepo" required type="text" class="form-control" id="floatingPassword"
+            placeholder="Password">
         <label for="floatingPassword">Github repository name</label>
     </div>
     <select @bind="mode" required class="form-select mb-2" aria-label="Default select example">
         <option value="frequency" selected>Frequency</option>
         <option value="author">Author</option>
+        <option value="fork"> Fork</option>
     </select>
     <div class="mb-2">
-        <RadzenButton Shade="Shade.Darker" ButtonStyle="ButtonStyle.Dark" ButtonType="Radzen.ButtonType.Submit" class="btn-primary btn">Load</RadzenButton>
+        <RadzenButton Shade="Shade.Darker" ButtonStyle="ButtonStyle.Dark" ButtonType="Radzen.ButtonType.Submit"
+            class="btn-primary btn">Load</RadzenButton>
 
     </div>
 </form>
 
-<span>
-    @insights
-    @if (frequencies is not null)
-    {
-        <RadzenChart Style="height: 600px" >
-            <RadzenColumnSeries Data="frequencies"
-                         CategoryProperty="Date"
-                         ValueProperty="Count"
-                         Title="Frequencies"
-                         LineType="LineType.Dashed">
-            </RadzenColumnSeries>
-            <RadzenColumnOptions Radius="5" Width="20"/>
-            <RadzenValueAxis>
-                <RadzenAxisTitle Text="Commits per date" />
-            </RadzenValueAxis>
-        </RadzenChart>
-    }
+@switch (mode)
+{
+    case "frequency":
+        <span>
+            @insights
+            @if (frequencies is not null)
+            {
+                <RadzenChart ColorScheme="ColorScheme.Palette" Style="height: 600px">
+                    <RadzenColumnSeries Data="frequencies" CategoryProperty="Date" ValueProperty="Count" Title="Frequencies"
+            LineType="LineType.Dashed">
+                    </RadzenColumnSeries>
+                    <RadzenColumnOptions Radius="5" Width="20" />
+                    <RadzenValueAxis>
+                        <RadzenAxisTitle Text="Commits per date" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            }
+        </span>
+        break;
 
-    
-</span>
+    case "fork":
+        <span>
+            @insights
+            @if (frequencies is not null)
+            {
+                <RadzenChart ColorScheme="ColorScheme.Palette" Style="height: 600px">
+                    <RadzenColumnSeries Data="@frequencies" CategoryProperty="Date" ValueProperty="Count" Title="Frequencies"
+            LineType="LineType.Dashed">
+                    </RadzenColumnSeries>
+                    <RadzenColumnOptions Radius="5" Width="20" />
+                    <RadzenValueAxis>
+                        <RadzenAxisTitle Text="Commits per date" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            }
+        </span>
+        break;
+
+    default:
+        <span>
+            @insights
+            @if (authors is not null)
+            {
+                <RadzenChart Style="height: 600px">
+                     <RadzenColumnSeries Data="@authors" CategoryProperty="Date" ValueProperty="Count" Title="Frequencies"
+            LineType="LineType.Dashed">
+                    </RadzenColumnSeries>
+                    <RadzenColumnOptions Radius="5" Width="20" />
+                    <RadzenValueAxis>
+                        <RadzenAxisTitle Text="Authors" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            }
+        </span>
+        break;
+}
+
+
+
+
+
 @code {
 
     private string insights = "";
 
     private IEnumerable<FrequencyDTO> frequencies;
+    private IEnumerable<AuthorDTO> authors;
 
     private string mode = "frequency";
     private string githubUser;
@@ -58,11 +107,29 @@
     private async Task DisplayInsights()
     {
         //var response = await Http.GetAsync($":5050/girepo/{mode}/{githubUser}/{githubRepo}");
-        var response = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("https://localhost:7009/gitrepo/frequency-test");
+
+
         //if (response.IsSuccessStatusCode)
         //{
-        //    insights = await response.Content.ReadAsStringAsync();
+        // insights = await response.Content.ReadAsStringAsync();
         //}
-        frequencies = response;
+
+        //var response;
+        switch (mode)
+        {
+            case "frequency":
+                frequencies = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("https://localhost:7009/gitrepo/frequency-test");
+                break;
+            case "author":
+                authors = await Http.GetFromJsonAsync<IEnumerable<AuthorDTO>>("https://localhost:7009/gitrepo/author-test");
+                break;
+            case "fork":
+                break;
+            default:
+                frequencies = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("https://localhost:7009/gitrepo/frequency-test");
+                break;
+
+        }
+
     }
 }
