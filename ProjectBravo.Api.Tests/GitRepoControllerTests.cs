@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using NSubstitute.ReturnsExtensions;
+using ProjectBravo.Core;
 using System.Globalization;
+using System.Xml.Linq;
 
 namespace ProjectBravo.Api.Tests;
 
@@ -48,7 +51,7 @@ public class GitRepoControllerTests
         .Returns(Task.FromResult($"1 {dateForClonedRepo.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"));
 
         // Act
-        var res = await _sut.GetFrequency("Billy", "Billy's-chat", _helper);
+        var res = await _sut.GetFrequency("Billy",1, "Billy's-chat", _helper);
 
         // Assert
         res.Should().Be($"1 {dateForClonedRepo.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
@@ -59,14 +62,25 @@ public class GitRepoControllerTests
     {
         // Arrange
         var dateForCurrentVersion = DateTime.Now.AddDays(-2);
-        var billyschat = new GitRepositoryDTO(1, "Billy's-chittychat",
-                    dateForCurrentVersion,
-                    new List<string>() { "Billy" },
-                    new List<int>() { 2 }
-                    );
+        var billyschat = new GitRepository
+        {
+            Id = 1,
+            Name = "Billy's-chittychat",
+            LatestCommitDate = dateForCurrentVersion,
+            Authors = new HashSet<Author> { new Author { Name = "Billy", Email = "Billy@mail.com" } },
+            Commits = new HashSet<Commit>(),
+        };
 
-        _substituteRepo.FindAsync("Billy's-chat")
-            .Returns(billyschat);
+        //new GitRepositoryDTO(1, "Billy's-chittychat",
+        //        dateForCurrentVersion,
+        //        new List<string>() { "Billy" },
+        //        new List<int>() { 2 }
+        //        );
+
+        var result = await _substituteRepo.FindAsync(1);
+        var found = result.Result as Ok<GitRepository>;
+        found!.Value.Should().Be(billyschat);
+            
 
         _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
                 .Returns(_fresh);
@@ -81,7 +95,7 @@ public class GitRepoControllerTests
         .Returns(Task.FromResult($"1 {dateForCurrentVersion.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"));
 
         // Act
-        var res = await _sut.GetFrequency("Billy", "Billy's-chat", _helper);
+        var res = await _sut.GetFrequency("Billy", 1, "Billy's-chat", _helper);
 
         // Assert
         res.Should().Be($"1 {dateForCurrentVersion.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
@@ -94,14 +108,18 @@ public class GitRepoControllerTests
         var dateForCurrentVersion = DateTime.Now.AddDays(-2);
 
         var newBillyCommit = DateTime.Now;
-        var billyschat = new GitRepositoryDTO(1, "Billy's-chat",
-                    newBillyCommit,
-                    new List<string>() { "Billy" },
-                    new List<int>() { 2 }
-                    );
+        var billyschat = new GitRepository
+            {
+            Id = 1,
+            Name = "Billy's-chittychat",
+            LatestCommitDate = dateForCurrentVersion,
+            Authors = new HashSet<Author> { new Author { Name = "Billy", Email = "Billy@mail.com" } },
+            Commits = new HashSet<Commit>(),
+        };
 
-        _substituteRepo.FindAsync("Billy's-chat")
-            .Returns(billyschat);
+        //var result = await _substituteRepo.FindAsync(1);
+        //var found = result.Result as Ok<GitRepository>;
+        //    .Returns(found.Value);
 
         _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
                 .Returns(_fresh);
@@ -116,7 +134,7 @@ public class GitRepoControllerTests
         .Returns(Task.FromResult($"1 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"));
 
         // Act
-        var res = await _sut.GetFrequency("Billy", "Billy's-chat", _helper);
+        var res = await _sut.GetFrequency("Billy", 1, "Billy's-chat", _helper);
 
         // Assert
         res.Should().Be($"1 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
@@ -127,14 +145,17 @@ public class GitRepoControllerTests
     {
         // Arrange 
         var newBillyCommit = DateTime.Now;
-        var billyschat = new GitRepositoryDTO(1, "Billy's-chat",
-                    newBillyCommit,
-                    new List<string>() { "Billy" },
-                    new List<int>() { 2 }
-                    );
+        var billyschat = new GitRepository
+        {
+            Id = 1,
+            Name = "Billy's-chittychat",
+            LatestCommitDate = newBillyCommit,
+            Authors = new HashSet<Author> { new Author { Name = "Billy", Email = "Billy@mail.com" } },
+            Commits = new HashSet<Commit>(),
+        };
 
-        _substituteRepo.FindAsync("Billy's-chat")
-            .ReturnsNull();
+        _substituteRepo.FindAsync(1).Result.Should().BeNull();
+            ;
 
         _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
                 .Returns(_fresh);
@@ -148,7 +169,7 @@ public class GitRepoControllerTests
         .Returns(Task.FromResult($"1 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"));
 
         // Act
-        var res = await _sut.GetAuthor("Billy", "Billy's-chat", _helper);
+        var res = await _sut.GetAuthor("Billy", 1,  "Billy's-chat", _helper);
 
         // Assert
         res.Should().Be($"1 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
@@ -159,14 +180,17 @@ public class GitRepoControllerTests
     {
         // Arrange 
         var newBillyCommit = DateTime.Now;
-        var billyschat = new GitRepositoryDTO(1, "Billy's-chat",
-                    newBillyCommit,
-                    new List<string>() { "Billy" },
-                    new List<int>() { 2 }
-                    );
+        var billyschat = new GitRepository
+        {
+            Id = 1,
+            Name = "Billy's-chittychat",
+            LatestCommitDate = newBillyCommit,
+            Authors = new HashSet<Author> { new Author { Name = "Billy", Email = "Billy@mail.com" } },
+            Commits = new HashSet<Commit>(),
+        };
 
-        _substituteRepo.FindAsync("Billy's-chat")
-            .Returns(billyschat);
+        //_substituteRepo.FindAsync("Billy's-chat")
+        //    .Returns(billyschat);
 
         _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
                 .Returns(_fresh);
@@ -181,7 +205,7 @@ public class GitRepoControllerTests
         .Returns(Task.FromResult($"1 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"));
 
         // Act
-        var res = await _sut.GetAuthor("Billy", "Billy's-chat", _helper);
+        var res = await _sut.GetAuthor("Billy", 1, "Billy's-chat", _helper);
 
         // Assert
         res.Should().Be($"1 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
@@ -195,14 +219,17 @@ public class GitRepoControllerTests
         var previousDate = DateTime.Now.AddDays(-2);
 
         var newBillyCommit = DateTime.Now;
-        var billyschat = new GitRepositoryDTO(1, "Billy's-chat",
-                    newBillyCommit,
-                    new List<string>() { "Billy" },
-                    new List<int>() {1, 2 }
-                    );
+        var billyschat = new GitRepository
+        {
+            Id = 1,
+            Name = "Billy's-chittychat",
+            LatestCommitDate = newBillyCommit,
+            Authors = new HashSet<Author> { new Author { Name = "Billy", Email = "Billy@mail.com" } },
+            Commits = new HashSet<Commit>(),
+        };
 
-        _substituteRepo.FindAsync("Billy's-chat")
-            .Returns(billyschat);
+        //_substituteRepo.FindAsync("Billy's-chat")
+        //    .Returns(billyschat);
 
         _helper.CreateInstance(Arg.Any<IGitRepoRepository>(), Arg.Any<ICommitRepository>())
                 .Returns(_fresh);
@@ -217,7 +244,7 @@ public class GitRepoControllerTests
         .Returns(Task.FromResult($"2 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}"));
 
         // Act
-        var res = await _sut.GetAuthor("Billy", "Billy's-chat", _helper);
+        var res = await _sut.GetAuthor("Billy", 1, "Billy's-chat", _helper);
 
         // Assert
         res.Should().Be($"2 {newBillyCommit.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}");
