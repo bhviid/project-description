@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ProjectBravo.Infrastructure\ProjectBravo.Infrastructure.csproj" />
     <ProjectReference Include="..\ProjectBravo\ProjectBravo.csproj" />
   </ItemGroup>
 

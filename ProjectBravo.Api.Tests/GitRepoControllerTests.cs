@@ -319,4 +319,24 @@ public class GitRepoControllerTests
         // Assert
         res.Should().Be(3);
     }
+
+    [Theory]
+    [InlineData("silasarildsen", "test")]
+    public async Task GetForks_returns_expected_forks(string owner, string repo)
+    {
+        // Arrange
+        var expected = new ForkDTO(
+                Id: 567672216,
+                Name: "test",
+                AuthorId: 43112458,
+                AuthorName: "silasarildsen1"
+            );
+
+        // Act
+        var res = await _sut.GetForks(owner, repo, new GitInsights());
+        var actual = res[3];
+
+        // Assert
+        actual.Should().Be(expected);
+    }
 }
