@@ -18,10 +18,8 @@ public class GitHelperTests
 
     public GitHelperTests()
     {
-
-
         _connection = new SqliteConnection("Filename=:memory:");
-        _connection.Open();
+		_connection.Open();
         var builder = new DbContextOptionsBuilder<GitContext>();
         builder.UseSqlite(_connection);
         _context = new GitContext(builder.Options);
