@@ -13,6 +13,14 @@
    * Store information about which repositories were analyzed at which state. (week 44)
    *  The database should store most recent commits. Database entries should be re-analyzed if a previous entry is not updated, but if the entry is up to date, the      application should just output from the readily available data. (week 44)
 
+* The application should have a frontend user interface that receives an identifier of a GitHub repository on the form <github_user>/<github_repository>. It should return a  chart corresponding to either a frequency or author request. These user should be able to choose one of those two options through the user interface. (week 48)
+
+* Given a GitHub repository, the web frontend should support returning a visualization of forks on that repository.  This feature should use the Github REST API. (week 48)
+
+* The application should be secure and only be accesible by authorized users via Github's Access Tokens. (week 48)
+
 ### Development
 * The program should be developed iteratively, expanding the the software requirements each week. Requirements are subject to change throughout the development period. (week 43)
 * Should be developed in an agile and test-driven manner. (week 43)
+* The project should have sufficient documentation for the development of the application, providing approriate diagrams for the structure and critical use cases.  (week 48)
+
