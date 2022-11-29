@@ -66,7 +66,7 @@ namespace ProjectBravo
             commitsToAdd = (IList<Core.Commit>)_libgitRepo!.Commits.Select(c =>
                 new Commit
                 {
-                    Id = _repoInDBId,
+                    
                     Author = new Author { Name = c.Author.Name, Email = c.Author.Email },
                     Message = c.Message,
                     Date = c.Author.When.DateTime,
