@@ -1,12 +1,16 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+
 namespace ProjectBravo.Core;
 
 public interface IGitRepoRepository
 {
-    Task<(Status, GitRepositoryDTO)> CreateAsync(GitRepositryCreateDTO gitRepo);
+    public Task<Results<Created<GitRepository>, ValidationProblem>> CreateAsync(GitRepository gitRepository);
 
-    Task<(Status, GitRepositoryDTO)> FindAsync(string gitRepoName);
+    public Task<Results<Ok<GitRepository>, NotFound<int>>> FindAsync(int repositoryId);
 
-    Task<IReadOnlyCollection<GitRepositoryDTO>> ReadAsync();
-    Task<Status> UpdateAsync(GitRepositryUpdateDTO author);
-    Task<Status> DeleteAsync(int authorId);
+    public Task<IReadOnlyCollection<GitRepository>> ReadAsync();
+    public Task<Results<NoContent, NotFound<int>>> DeleteAsync(int repositoryId);
+    public Task<Results<NoContent, NotFound<int>>> UpdateAsync(int repoId, GitRepository gitRepository);
+
+
 }

@@ -7,7 +7,7 @@ public interface IGitAnalyzer
 {
     string GetFrequencyString(Repository repo);
 
-    string GetFrequencyString(IEnumerable<CommitDTO> commits);
+    string GetFrequencyString(IEnumerable<Core.Commit> commits);
 
     string GetAuthorString(Repository repo);
 

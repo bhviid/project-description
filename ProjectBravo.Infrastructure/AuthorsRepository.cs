@@ -14,7 +14,7 @@ public class AuthorsRepository : IAuthorRepository
         _validator = validator;
 
     }
-    async Task<Results<Created<Author>, ValidationProblem>> CreateAsync(Author author)
+    public async Task<Results<Created<Author>, ValidationProblem>> CreateAsync(Author author)
     {
         var validation = _validator.Validate(author);
 
@@ -31,17 +31,22 @@ public class AuthorsRepository : IAuthorRepository
         _context.Authors.Add(entity);
         await _context.SaveChangesAsync();
 
-        return TypedResults.Created($"{entity.Id}", author with { Id = entity.id });
+        return TypedResults.Created($"{entity.Id}", author with { Id = entity.Id });
 
     }
-    public async Task<Author> FindAsync(int authorId)
+    public async Task<Results<Ok<Author>, NotFound<int>>> FindAsync(int authorId)
     {
         var entitiy = from ent in _context.Authors
                       where ent.Id == authorId
-                      select new Author { Id= ent.Id, Email = ent.Email, Name= ent.Name};
+                      select new Author
+                      {
+                          Id= ent.Id,
+                          Email = ent.Email,
+                          Name= ent.Name
+                      };
 
         var author = await entitiy.FirstOrDefaultAsync();
-        return author;
+        return author is null ? TypedResults.NotFound(authorId) : TypedResults.Ok(author);
 
 
     }
@@ -55,7 +60,7 @@ public class AuthorsRepository : IAuthorRepository
     }
     public async Task<Results<NoContent, NotFound<int>>> UpdateAsync(int id, Author author)
     {
-        var entity = await _context.Authors.FindAsync(author.Id);
+        var entity = await _context.Authors.FindAsync(id);
         
         if (entity == null)
         {
@@ -70,7 +75,7 @@ public class AuthorsRepository : IAuthorRepository
 
     }
 
-    async Task<Results<NoContent, NotFound<int>>> DeleteAsync(int authorId)
+    public async Task<Results<NoContent, NotFound<int>>> DeleteAsync(int authorId)
     {
         var entity = await _context.Authors.FindAsync(authorId);
         

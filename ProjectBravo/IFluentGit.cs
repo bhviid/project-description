@@ -14,16 +14,16 @@ namespace ProjectBravo
 
     public interface IClonedGitHelper
     {
-        bool IsNewerThanInDb(GitRepositoryDTO gitRepo);
+        bool IsNewerThanInDb(GitRepository gitRepo);
         IFinalGitHelper ThenAddNewDbEntry();
 
-        IFinalGitHelper ThenUpdateExistingDbEntry();
+        Task<IFinalGitHelper>ThenUpdateExistingDbEntry();
         IFinalGitHelper ThenGetCurrentFromDb();
     }
 
     public interface IFinalGitHelper
     {
-        Task<IEnumerable<CommitDTO>> ThenReturnCommits();
+        Task<IEnumerable<Commit>> ThenReturnCommits();
         Task<string> ThenReturnFrequencyString();
 
         Task<string> ThenReturnAuthorString();

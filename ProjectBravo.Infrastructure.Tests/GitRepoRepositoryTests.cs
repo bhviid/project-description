@@ -1,4 +1,5 @@
 using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Xunit.Sdk;
 
@@ -63,17 +64,42 @@ public class GitRepoRepositoryTests
         found!.Value!.Name.Should().Be("seed repo");
     }
 
-    //    [Fact]
-    //    public async Task Find_given_non_existing_repo_name_returns_null()
-    //    {
-    //        // Arrange
+    [Fact]
+    public async Task Find_given_non_existing_repo_id_returns_validationProblem()
+    {
+        // Arrange
+        var result = await _repo.FindAsync(42);
+        var found = result.Result as NotFound<int>;
+        found!.Value.Should().Be(42);
+    }
 
-    //        // Act
-    //        var found = await _repo.FindAsync("Etrepo");
+    [Fact]
+    public async Task Update_given_existing_succeeds()
+    {
+        var repo = new GitRepository
+        {
+            Authors = new HashSet<Author> { new Author { Email = "naja@gmail.com", Name = "Naja"} },
+            Commits = new HashSet<Commit> { new Commit { 
+                Author = new Author{ Email = "najse@gmail.com", Name = "Naja"},
+                Date = DateTime.MinValue,
+                Message = "Updated Repo",
+                RepoName = "Updated Repo",
+                RepositoryId = 1,
+                Sha = "a unique sha",}},
+                LatestCommitDate = DateTime.MinValue,
+                Name = "Updated Repo"
 
-    //        // Assert
-    //        found.Should().BeNull();
-    //    }
+
+        };
+
+        var result = _repo.UpdateAsync(1, repo);
+        var found = await _repo.FindAsync(1);
+        
+        var updated = found.Result as Ok<GitRepository>;
+        updated!.Value!.Commits.FirstOrDefault().Message.Should().Be("Updated Repo");
+
+    
+    }
 
     //    [Fact]
     //    public async Task Update_given_existing_succeeds()

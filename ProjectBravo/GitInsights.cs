@@ -12,36 +12,36 @@ public class GitInsights : IGitAnalyzer
     {
     }
 
-    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(string repository)
+    public List<IGrouping<DateTime, LibGit2Sharp.Commit>> GenerateCommitsByDate(string repository)
     {
         using var repo = new Repository(repository);
         return GenerateCommitsByDate(repo);
     }
 
-    public List<IGrouping<DateTime, Commit>> GenerateCommitsByDate(Repository repository)
+    public List<IGrouping<DateTime, LibGit2Sharp.Commit>> GenerateCommitsByDate(Repository repository)
     {
         return repository.Commits.GroupBy(commit => commit.Author.When.Date).ToList();
     }
 
-    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(string repoPath)
+    public Dictionary<string, List<LibGit2Sharp.Commit>> GenerateCommitsByAuthor(string repoPath)
     {
         using var repo = new Repository(repoPath);
         return GenerateCommitsByAuthor(repo);
     }
 
-    public Dictionary<string, List<Commit>> GenerateCommitsByAuthor(Repository repo)
+    public Dictionary<string, List<LibGit2Sharp.Commit>> GenerateCommitsByAuthor(Repository repo)
     {
-        Dictionary<string, List<Commit>> authorToCommits;
+        Dictionary<string, List<LibGit2Sharp.Commit>> authorToCommits;
 
         var dateGroups = repo.Commits.GroupBy(
             commit => commit.Author.When.Date
         );
-        authorToCommits = new Dictionary<string, List<Commit>>();
+        authorToCommits = new Dictionary<string, List<LibGit2Sharp.Commit>>();
 
         var authors = repo.Commits.Select(commit => commit.Author.Name).Distinct();
         foreach (var author in authors)
         {
-            authorToCommits.Add(author, new List<Commit>());
+            authorToCommits.Add(author, new List<LibGit2Sharp.Commit>());
             foreach (var commit in repo.Commits)
             {
                 if (commit.Author.Name == author)
@@ -67,7 +67,7 @@ public class GitInsights : IGitAnalyzer
         return sb.ToString();
     }
 
-    public string GetFrequencyString(IEnumerable<CommitDTO> commits)
+    public string GetFrequencyString(IEnumerable<Core.Commit> commits)
     {
         var sb = new StringBuilder();
         commits.GroupBy(c => c.Date).ToList()

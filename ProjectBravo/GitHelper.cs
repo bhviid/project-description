@@ -1,6 +1,9 @@
 using ProjectBravo.Core;
 using LibGit2Sharp;
 using ProjectBravo.Infrastructure;
+using Commit = ProjectBravo.Core.Commit;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.Collections;
 
 namespace ProjectBravo
 {
@@ -11,23 +14,22 @@ namespace ProjectBravo
 
         private Repository? _libgitRepo;
 
-        private GitRepositoryDTO _alreadyInDb;
+        private GitRepository _alreadyInDb;
 
         private string _githubUser;
         private string _gitRepoName;
         private int _repoInDBId;
 
         private ShouldDo _shouldDo;
-        private IList<AuthorCreateDTO> authorsToAdd;
-        private IList<CommitCreateDTO> commitsToAdd;
+        private IList<Author> authorsToAdd;
+        private IList<Commit> commitsToAdd;
         private IList<int> newCommitIds;
 
         internal GitHelper(IGitRepoRepository rRepo, ICommitRepository cRepo)
         {
             _dbRepoRepo = rRepo;
             _dbCommitRepo = cRepo;
-            var (status, RepoInDB) = _dbRepoRepo.FindAsync(_gitRepoName).Result;
-            _repoInDBId = RepoInDB.Id;
+
         }
 
         public IFreshGitHelper CreateInstance(IGitRepoRepository gitRepoDbRepo, ICommitRepository gitCommitDbRepo)
@@ -49,39 +51,66 @@ namespace ProjectBravo
             return new Repository(path);
         }
 
-        public bool IsNewerThanInDb(GitRepositoryDTO that)
+        public bool IsNewerThanInDb(GitRepository that)
         {
             _alreadyInDb = that;
-            return that.LatestCommit < _libgitRepo!.Commits.Max(c => c.Author.When.DateTime);
+            return that.LatestCommitDate < _libgitRepo!.Commits.Max(c => c.Author.When.DateTime);
         }
 
         public IFinalGitHelper ThenAddNewDbEntry()
         {
             
-            authorsToAdd = _libgitRepo!.Commits.Select(c =>
-            new AuthorCreateDTO(c.Author.Name, c.Author.Email)).ToList();
-            commitsToAdd = _libgitRepo!.Commits.Select(c =>
-                new CommitCreateDTO( _repoInDBId, c.Author.When.DateTime, c.Message, c.Author.Name, c.Author.Email, _gitRepoName))
-                .ToList();
+            authorsToAdd = (IList<Author>)_libgitRepo!.Commits.Select(c =>
+            new Author { Name = c.Author.Name, Email = c.Author.Email }
+            );
+            commitsToAdd = (IList<Core.Commit>)_libgitRepo!.Commits.Select(c =>
+                new Commit
+                {
+                    Id = _repoInDBId,
+                    Author = new Author { Name = c.Author.Name, Email = c.Author.Email },
+                    Message = c.Message,
+                    Date = c.Author.When.DateTime,
+                    RepoName = _gitRepoName,
+                    RepositoryId = _repoInDBId,
+                    Sha = c.Sha,
+
+                });
+                //( _repoInDBId,
+                //c.Author.When.DateTime,
+                //c.Message, c.Author.Name,
+                //c.Author.Email,
+                //_gitRepoName))
+                
 
             _shouldDo = ShouldDo.CreateNew;
 
             return this;
         }
 
-        public IFinalGitHelper ThenUpdateExistingDbEntry()
+        public async Task<IFinalGitHelper> ThenUpdateExistingDbEntry()
         {
             _shouldDo = ShouldDo.UpdateExisting;
-            var (status, RepoInDB) = _dbRepoRepo.FindAsync(_gitRepoName).Result;
+            var results = await _dbRepoRepo.FindAsync(_repoInDBId);
+            Ok<GitRepository> found = results.Result as Ok<GitRepository>;
+            var RepoInDb = found!.Value;
 
-            authorsToAdd = _libgitRepo!.Commits.Select(c => new AuthorCreateDTO(
-                c.Author.Name,
-                c.Author.Email)).Distinct().ToList();   
-            commitsToAdd = _libgitRepo!.Commits
-                .Where(c => _alreadyInDb.LatestCommit <= c.Author.When.DateTime)
-                .Select(c =>
-                    new CommitCreateDTO(RepoInDB.Id, c.Author.When.DateTime, c.Message, c.Author.Name, c.Author.Email, _gitRepoName))
-                .ToList();
+            authorsToAdd = (IList<Author>)_libgitRepo!.Commits.Select(c => new Author { 
+                Name = c.Author.Name,
+                Email = c.Author.Email,
+            });
+
+            commitsToAdd = (IList<Commit>)_libgitRepo!.Commits
+                .Where(c => _alreadyInDb.LatestCommitDate <= c.Author.When.DateTime)
+                .Select(c => new Commit
+                {
+                    RepositoryId = RepoInDb!.Id,
+                    Date = c.Author.When.DateTime,
+                    Author = new Author { Name = c.Author.Name, Email = c.Author.Email},
+                    Message = c.Message,
+                    Sha = c.Sha,
+                    RepoName = _gitRepoName,
+                });
+                 
 
             return this;
         }
@@ -97,7 +126,7 @@ namespace ProjectBravo
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<CommitDTO>> ThenReturnCommits()
+        public async Task<IEnumerable<Core.Commit>> ThenReturnCommits()
         {
             if (_shouldDo != ShouldDo.ReadExisting)
             {
@@ -118,7 +147,7 @@ namespace ProjectBravo
             return analyzer.GetFrequencyString(await GetCommitsAsync());
         }
 
-        private async Task<IEnumerable<CommitDTO>> GetCommitsAsync()
+        private async Task<IEnumerable<Core.Commit>> GetCommitsAsync()
         {
             var commitsInDb = await _dbCommitRepo.ReadAsync();
             return commitsInDb.Where(c => c.RepositoryId == _repoInDBId).ToList();
@@ -131,23 +160,34 @@ namespace ProjectBravo
             switch (_shouldDo)
             {
                 case ShouldDo.CreateNew:
-                    var (status, dto) = await _dbRepoRepo.CreateAsync(new GitRepositryCreateDTO(_gitRepoName,
-                        authorsToAdd, commitsToAdd));
-                    _alreadyInDb = dto;
+                    var repo = await _dbRepoRepo.CreateAsync(new Core.GitRepository
+                    {
+                        Name = _gitRepoName,
+                        Authors = (HashSet<Author>)authorsToAdd,
+                        Commits = (HashSet<Commit>)commitsToAdd,
+                        LatestCommitDate = getLatestCommit(commitsToAdd),
+                    });
+                    var resultAsRepo = repo.Result as Created<GitRepository>;
+                    _alreadyInDb = resultAsRepo!.Value!;
                     break;
                 case ShouldDo.UpdateExisting:
                     foreach (var commit in commitsToAdd)
                     {
                         var temp = commit;
-                        var (HttpStatus, dto) = await _dbCommitRepo.CreateAsync(temp);
-                        newCommitIds.Add(dto.Id);
+                        var results = await _dbCommitRepo.CreateAsync(temp);
+                        var com = results.Result as Created<Commit>;
+                        newCommitIds.Add(com!.Value!.Id);
                     }
-                    var updatedRepo = await _dbRepoRepo.UpdateAsync(new GitRepositryUpdateDTO(
-                        _gitRepoName,
-                        authorsToAdd,
-                        newCommitIds
-                    ));
-                    _alreadyInDb = updatedRepo;
+                    var result = await _dbRepoRepo.UpdateAsync(_repoInDBId, new GitRepository {
+                        Name = _gitRepoName,
+                        Authors = (HashSet<Author>)authorsToAdd,
+                        Commits = (HashSet<Commit>)commitsToAdd,
+                        LatestCommitDate = getLatestCommit(commitsToAdd),
+                    });
+                    var found = await _dbRepoRepo.FindAsync(_repoInDBId);
+                    var tempo = found.Result as Ok<GitRepository>;
+
+                    _alreadyInDb = tempo!.Value;
                     break;
             }
         }
@@ -155,6 +195,16 @@ namespace ProjectBravo
         private enum ShouldDo
         {
             CreateNew, UpdateExisting, ReadExisting
+        }
+
+        private DateTime getLatestCommit(IEnumerable<Commit> commits)
+        {
+            var latestDateTime = DateTime.MinValue;
+            foreach (var commit in commits)
+            {
+                if (commit.Date > latestDateTime) { latestDateTime = commit.Date; }
+            }
+            return latestDateTime;
         }
 
     }

@@ -19,7 +19,7 @@ public class Program
         var factory = new GitContextFactory();
         var context = factory.CreateDbContext(args);
         context.Database.EnsureCreated();
-        var repo = new GitRepoRepository(context);
+        var repo = new GitRepoRepository(context, new Core.GitRepositoryValidator());
         
         
 

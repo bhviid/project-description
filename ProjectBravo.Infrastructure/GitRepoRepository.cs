@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using ProjectBravo.Core;
 using ProjectBravo.Infrastructure;
 
 namespace ProjectBravo.Infrastructure;
@@ -8,181 +11,112 @@ namespace ProjectBravo.Infrastructure;
 public class GitRepoRepository : IGitRepoRepository
 {
     private readonly GitContext _context;
+    private readonly GitRepositoryValidator _validator;
+    
 
-    public GitRepoRepository(GitContext context)
+
+    public GitRepoRepository(GitContext context, GitRepositoryValidator validator)
     {
         _context = context;
+        _validator = validator;
+        
     }
 
-    public async Task<(Status, GitRepositoryDTO)> CreateAsync(GitRepositryCreateDTO gitRepo)
+    public async Task<Results<Created<GitRepository>, ValidationProblem>> CreateAsync(GitRepository gitRepository)
     {
-        var entity = await _context.Repos.FirstOrDefaultAsync(git => git.Name == gitRepo.Name);
-        Status status;
+        var validation = _validator.Validate(gitRepository);
 
-        if (entity is null)
+        if (!validation.IsValid)
         {
-
-            var repo = new GitRepository
-            {
-                Name = gitRepo.Name,
-                Authors = await CreateOrUpdateAuthor(gitRepo.Authors),
-                Commits = await CreateOrUpdateCommit(gitRepo.Commits),
-                LatestCommitDate = GetLatestCommit(gitRepo.Commits)
-            };
-
-
-
-            _context.Repos.Add(repo);
-            await _context.SaveChangesAsync();
-
-            status = Created;
-            return (status, new GitRepositoryDTO(repo.Id, gitRepo.Name, DateTime.Now, authorDtoToAuthorCreateDto(gitRepo.Authors).ToList(),  gitRepo.Commits));
-        }
-        else
-        {
-            status = Conflict;
+            return TypedResults.ValidationProblem(validation.ToDictionary());
         }
 
+        var exists = _context.Repos.FirstOrDefaultAsync(r => r.Name == gitRepository.Name);
+
+        if (exists != null)
+        {
+            //Todo
+        }
+        var entity = new GitRepositoryEntity
+        {
+            Name = gitRepository.Name,
+            Authors = gitRepository.Authors,
+            Commits = gitRepository.Commits,
+            LatestCommitDate = gitRepository.LatestCommitDate,
+        };
+
+        _context.Repos.Add(entity);
+        await _context.SaveChangesAsync();
+        //return TypedResults.Created($"{entity.Id}", commit with { Id = entity.Id});
+        return TypedResults.Created($"{entity.Id}", gitRepository with { Id = entity.Id});
 
 
-        var created = new GitRepositoryDTO(entity.Id, entity.Name, entity.LatestCommitDate, toAuthorDtos(entity.Authors), toCommitCreateDtos(entity.Commits));
-
-
-
-        return (status, created);
     }
 
 
-    public async Task<(Status, GitRepositoryDTO?)> FindAsync(string gitRepoName)
+    public async Task<Results<Ok<GitRepository>, NotFound<int>>> FindAsync(int repositoryId)
     {
         var repos = from r in _context.Repos
-                    where r.Name == gitRepoName
-                    select new GitRepositoryDTO(r.Id, r.Name, r.LatestCommitDate, toAuthorDtos(r.Authors), toCommitCreateDtos(r.Commits));
-        if (await repos.FirstOrDefaultAsync() == null)
-        {
-
-            return (NotFound, null);
-        }
-        else
-        {
-
-            return (Status.OK, await repos.FirstOrDefaultAsync());
-        }
+                    where r.Id == repositoryId
+                    select new GitRepository
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        Authors = r.Authors,
+                        Commits = r.Commits,
+                        LatestCommitDate = r.LatestCommitDate,
+                    };
+        var repo = await repos.FirstOrDefaultAsync();
+        return repo is null ? TypedResults.NotFound(repositoryId) : TypedResults.Ok(repo);
     }
 
-    public async Task<IReadOnlyCollection<GitRepositoryDTO>> ReadAsync()
+    public async Task<IReadOnlyCollection<GitRepository>> ReadAsync()
     {
         var repos = from r in _context.Repos
                     orderby r.Name
-                    select new GitRepositoryDTO(r.Id, r.Name, r.LatestCommitDate, toAuthorDtos(r.Authors), r.Commits);
+                    select new GitRepository
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        Authors = r.Authors,
+                        Commits = r.Commits,
+                        LatestCommitDate = r.LatestCommitDate,
+                    };
         return await repos.ToListAsync();
     }
     //todo update commits
-    //
-    public async Task<Status>UpdateAsync(GitRepositryUpdateDTO gitRepo)
+
+    public async Task<Results<NoContent, NotFound<int>>> UpdateAsync(int repoId, GitRepository gitRepository)
     {
-        var entity = await _context.Repos.FindAsync(gitRepo.Name);
-        Status status;
+        var entity = await _context.Repos.FindAsync(repoId);
+       
         if (entity is null)
         {
-            status = NotFound;
+            return TypedResults.NotFound(repoId);
         }
-        //else if (await _context.Repos.FirstOrDefaultAsync(r => r.Id != gitRepo.Id && r.Name == gitRepo.Name) != null)
-        //{
-        //    status = Conflict;
-        //}
-        else
-        {
-            entity.Name = gitRepo.Name;
-            var authorNameList = gitRepo.Authors;
-            var authorSet = new HashSet<Author>();
-            foreach (var author in authorNameList)
-            {
-                var a = new Author(author.Name, author.Email);
-                authorSet.Add(a);
+        entity.Authors = gitRepository.Authors;
+        entity.Commits = gitRepository.Commits;
+        entity.LatestCommitDate = gitRepository.LatestCommitDate;
 
-            }
-            entity.Authors = authorSet;
+        await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
-            status = Updated;
-
-        }
-        return status;
+        return TypedResults.NoContent();
     }
 
-    public async Task<Status> DeleteAsync(int gitRepoid)
+    public async Task<Results<NoContent, NotFound<int>>> DeleteAsync(int repositoryId)
     {
-        var gitRepo = await _context.Repos.Include(r => r.Authors).FirstOrDefaultAsync(r => r.Id == gitRepoid);
-        Status status;
+        var gitRepo = await _context.Repos.FindAsync(repositoryId);
+        
         if (gitRepo is null)
         {
-            status = NotFound;
+            return TypedResults.NotFound(repositoryId);
 
         }
-        else if (gitRepo.Authors.Any())
-        {
-            status = Conflict;
-        }
-        else
-        {
-            _context.Repos.Remove(gitRepo);
-            await _context.SaveChangesAsync();
-            status = Deleted;
+        _context.Repos.Remove(gitRepo);
+        await _context.SaveChangesAsync();
 
-        }
-        return status;
-
-        
+        return TypedResults.NoContent();
     }
-    private List<AuthorDTO> toAuthorDtos(HashSet<Author> set)
-    {
-        var AuthorList = new List<AuthorDTO>();
-        foreach (var author in set)
-        {
-            var temp = new AuthorDTO(author.Id, author.Name, author.Email);
-            AuthorList.Add(temp);
-        }
-        return AuthorList;
-    }
-
-   
-    private async Task<HashSet<Author>> CreateOrUpdateAuthor(IEnumerable <AuthorCreateDTO> list)
-    {
-        var existing = _context.Authors.Where(a => list.Any(l => l.Email == a.Email)).ToDictionary(a => a.Email);
-        var AuthorSet = new HashSet<Author>();
-        foreach (var item in list)
-        {
-            existing.TryGetValue(item.Email, out var author);
-
-            AuthorSet.Add(author ?? new Author(item.Name, item.Email));
-            
-        }
-        return AuthorSet;
-    }
-
-    private async Task<HashSet<Commit>> CreateOrUpdateCommit(IEnumerable<CommitCreateDTO> list)
-    {
-        var existing = _context.Commits.Where(c => list.Any(l => l.Sha == c.Sha)).ToDictionary(a => a.Sha);
-        var CommitSet = new HashSet<Commit>();
-        foreach (var item in list)
-        {
-            existing.TryGetValue(item.Sha, out var commit);
-
-            CommitSet.Add(commit ?? new Commit(item.RepositoryId, new Author(item.AuthorName, item.Email), item.Date, item.Message, item.RepoName, item.Sha;
-
-        }
-        return CommitSet;
-    }
-
-    private DateTime GetLatestCommit(IEnumerable<CommitCreateDTO> commits)
-    {
-        DateTime LatestDateTime = DateTime.MinValue;
-        foreach (var commit in commits)
-        {
-            if (commit.Date > LatestDateTime) { LatestDateTime= commit.Date; }
-        }
-        return LatestDateTime;
-    }
+    
 }
 
