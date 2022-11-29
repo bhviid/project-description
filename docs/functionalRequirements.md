@@ -17,6 +17,10 @@
 
 * Given a GitHub repository, the web frontend should support returning a visualization of forks on that repository.  This feature should use the Github REST API. (week 48)
 
+
+
+## Non-functional requirements 
+
 * The application should be secure and only be accesible by authorized users via Github's Access Tokens. (week 48)
 
 ### Development
