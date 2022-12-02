@@ -30,6 +30,16 @@ public class GitRepoController : ControllerBase
         new FrequencyDTO(3, DateTime.Now)
         };
     }
+    [HttpGet]
+    [Route("author-test")]
+    public IEnumerable<AuthorDTO> GetAuthors()
+    {
+        return new[] {
+        new AuthorDTO(21, "Erik"),
+        new AuthorDTO(5, "Bo"),
+        new AuthorDTO(3, "Lars")
+        };
+    }
 
     [HttpGet()]
     [Route("freqeuncy-dto/{github_user}/{repo_name}")]

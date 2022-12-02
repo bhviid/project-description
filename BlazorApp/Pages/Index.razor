@@ -36,12 +36,11 @@
 {
     case "frequency":
         <span>
-            @insights
             @if (frequencies is not null)
             {
                 <RadzenChart ColorScheme="ColorScheme.Palette" Style="height: 600px">
                     <RadzenColumnSeries Data="frequencies" CategoryProperty="Date" ValueProperty="Count" Title="Frequencies"
-            LineType="LineType.Dashed">
+                    LineType="LineType.Dashed">
                     </RadzenColumnSeries>
                     <RadzenColumnOptions Radius="5" Width="20" />
                     <RadzenValueAxis>
@@ -53,10 +52,28 @@
         break;
 
     case "fork":
-        throw new NotImplementedException();
+        <span>
+           <p>Not working... </p>
+        </span>
         break;
 
-    default:
+    case "author":
+        <span>
+            @if (authors is not null)
+            {
+                <RadzenChart ColorScheme="ColorScheme.Palette" Style="height: 600px">
+                    <RadzenColumnSeries Data="authors" CategoryProperty="Name" ValueProperty="Id" Title="Commits"
+                    LineType="LineType.Dashed">
+                    </RadzenColumnSeries>
+                    <RadzenColumnOptions Radius="5" Width="20" />
+                    <RadzenValueAxis>
+                        <RadzenAxisTitle Text="Commits per author" />
+                    </RadzenValueAxis>
+                </RadzenChart>
+            }
+        </span>
+        break;
+        default:
         throw new NotImplementedException();
         break;
 }
@@ -66,9 +83,6 @@
 
 
 @code {
-
-    private string insights = "";
-
     private IEnumerable<FrequencyDTO> frequencies;
     private IEnumerable<AuthorDTO> authors;
 
@@ -93,11 +107,11 @@
                 frequencies = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("https://localhost:7009/gitrepo/frequency-test");
                 break;
             case "author":
-                throw new NotImplementedException();
-                //authors = await Http.GetFromJsonAsync<IEnumerable<AuthorDTO>>("https://localhost:7009/gitrepo/author-test");
+                
+                authors = await Http.GetFromJsonAsync<IEnumerable<AuthorDTO>>("https://localhost:7009/gitrepo/author-test");
                 break;
             case "fork":
-            throw new NotImplementedException();
+                //authors = await Http.GetFromJsonAsync<IEnumerable<AuthorDTO>>("https://localhost:7009/gitrepo/author-test");
                 break;
             default:
                 frequencies = await Http.GetFromJsonAsync<IEnumerable<FrequencyDTO>>("https://localhost:7009/gitrepo/frequency-test");
